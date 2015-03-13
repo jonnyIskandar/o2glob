@@ -1,5 +1,5 @@
 ### O2Glob
-[O2Glob][2] is a Mini Singleton Core Framework aka Super Global Object created by [PT. Lingkar Kreasi (Circle Creative)][1]
+[O2Glob][2] is a Mini Singleton Core Framework aka Super Global Object or as a Third Party (Vendor) for Singleton Factory created by [PT. Lingkar Kreasi (Circle Creative)][1]
 
 For more information and how to use it? [Please read the wiki page][3]
 
