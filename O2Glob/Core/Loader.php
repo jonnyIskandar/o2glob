@@ -1,8 +1,8 @@
 <?php
 /**
- * O2System
+ * O2Glob
  *
- * An open source application development framework for PHP 5.2.4 or newer
+ * An mini open source application development framework for PHP 5.3 or newer
  *
  * This content is released under the MIT License (MIT)
  *
@@ -124,12 +124,30 @@ class Loader
             throw new \Exception( 'Undefined root path of your application' );
         }
 
-        $filepath = ROOT_PATH . $filename;
+        $path     = ROOT_PATH . pathinfo( $filename, PATHINFO_DIRNAME );
+        $filename = pathinfo( $filename, PATHINFO_BASENAME );
 
-        if ( file_exists( $filepath ) )
+        if ( file_exists( $path . $filename ) )
         {
-            require_once( $filepath );
+            require_once( $path . $filename );
+        }
+        // Maybe is at the subfolder
+        elseif ( file_exists( str_replace( '.php', '', strtolower( $filename ) ) . DIRECTORY_SEPARATOR . $filename ) )
+        {
+            require_once( $path . str_replace( '.php', '', strtolower( $filename ) ) . DIRECTORY_SEPARATOR . $filename );
 
+            return TRUE;
+        } // Maybe is a driver
+        elseif ( file_exists( $path . str_replace( '.php', '',
+                                                   ucfirst( $filename ) ) . DIRECTORY_SEPARATOR . $filename ) )
+        {
+            require_once( $path . str_replace( '.php', '', ucfirst( $filename ) ) . DIRECTORY_SEPARATOR . $filename );
+
+            return TRUE;
+        }
+
+        if ( class_exists( $class ) )
+        {
             $class = strtolower( $class );
             if ( ! isset( static::$_libraries_classes[ $class ] ) )
             {

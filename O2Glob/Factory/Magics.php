@@ -1,8 +1,8 @@
 <?php
 /**
- * O2System
+ * O2Glob
  *
- * An open source application development framework for PHP 5.2.4 or newer
+ * An mini open source application development framework for PHP 5.3 or newer
  *
  * This content is released under the MIT License (MIT)
  *
@@ -77,7 +77,7 @@ trait Magics
      * Magic method to set class properties
      * Static property or non static property
      *
-     * @access public
+     * @access  public
      *
      * @param   $property   string of property name
      * @param   $args       array of parameters
@@ -88,21 +88,81 @@ trait Magics
      */
     final public function __set( $name, $value )
     {
-        if(! isset($this->{$name}) AND ! isset(static::${$name}))
+        // Set Static Properties
+        if ( isset( static::${$name} ) )
         {
-            $this->{$name} = $value;
+            $this->__set_static( $name, $value );
         }
-        elseif(isset($this->{$name}) AND ! isset(static::${$name}))
+        elseif ( isset( static::${'_' . $name} ) )
         {
-            if(is_array($this->{$name}))
+            $this->__set_static( '_' . $name, $value );
+        }
+        elseif ( isset( static::${'__' . $name} ) )
+        {
+            $this->__set_static( '__' . $name, $value );
+        }
+        else
+        {
+            $this->__set_non_static( $name, $value );
+        }
+    }
+
+    /**
+     * Set Static Property
+     *
+     * @access  private
+     *
+     * @param   $property   string of property name
+     * @param   $args       array of parameters
+     *
+     * @replace false       final method cannot be replaced
+     *
+     * @return mixed
+     */
+    final private function __set_static( $name, $value )
+    {
+        if ( is_array( static::${$name} ) )
+        {
+            if ( is_string( $value ) )
             {
-                if(is_string($value))
+                array_push( static::${$name}, $value );
+            }
+            elseif ( is_array( $value ) )
+            {
+                static::${$name} = array_merge( static::${$name}, $value );
+            }
+        }
+        else
+        {
+            static::${$name} = $value;
+        }
+    }
+
+    /**
+     * Set Non-Static Property
+     *
+     * @access  private
+     *
+     * @param   $property   string of property name
+     * @param   $args       array of parameters
+     *
+     * @replace false       final method cannot be replaced
+     *
+     * @return mixed
+     */
+    final private function __set_non_static( $name, $value )
+    {
+        if ( isset( $this->{$name} ) )
+        {
+            if ( is_array( $this->{$name} ) )
+            {
+                if ( is_string( $value ) )
                 {
-                    array_push($this->{$name}, $value);
+                    array_push( $this->{$name}, $value );
                 }
-                elseif(is_array($value))
+                elseif ( is_array( $value ) )
                 {
-                    $this->{$name} = array_merge($this->{$name}, $value);
+                    $this->{$name} = array_merge( $this->{$name}, $value );
                 }
             }
             else
@@ -110,13 +170,34 @@ trait Magics
                 $this->{$name} = $value;
             }
         }
+        else
+        {
+            $this->{$name} = $value;
+        }
+    }
+
+    /**
+     * Magic Method __set alias
+     *
+     * @access  public
+     *
+     * @param   $property   string of property name
+     * @param   $args       array of parameters
+     *
+     * @replace false       final method cannot be replaced
+     *
+     * @return mixed
+     */
+    final public static function set( $name, $value )
+    {
+        static::$_instance->__set( $name, $value );
     }
 
     /**
      * Magic method to get class properties
      * Static property or non static property
      *
-     * @access public
+     * @access  public
      *
      * @param   $property   string of property name
      * @param   $args       array of parameters
@@ -154,9 +235,26 @@ trait Magics
     }
 
     /**
+     * Property getter method alias
+     *
+     * @access  private
+     *
+     * @param   $property   string of property name
+     * @param   $args       array of parameters
+     *
+     * @replace false     final method cannot be replaced
+     *
+     * @return mixed
+     */
+    final public static function get( $name, $args )
+    {
+        return static::__get_property( $name, $args );
+    }
+
+    /**
      * Property getter method and validation
      *
-     * @access private
+     * @access  private
      *
      * @param   $property   string of property name
      * @param   $args       array of parameters
@@ -268,7 +366,7 @@ trait Magics
     /**
      * Validate a non static method calls
      *
-     * @access public
+     * @access  public
      *
      * @param   $method   string of method name or property name
      * @param   $args     array of parameters
@@ -285,7 +383,7 @@ trait Magics
     /**
      * Validate a static method calls
      *
-     * @access public
+     * @access  public
      *
      * @param   $method   string of method name or property name
      * @param   $args     array of parameters
@@ -347,5 +445,6 @@ trait Magics
         }
     }
 }
+
 /* End of file Magics.php */
 /* Location: ./O2Glob/Factory/Magics.php */
