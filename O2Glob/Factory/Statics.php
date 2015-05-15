@@ -54,6 +54,8 @@ defined( 'GLOB_PATH' ) OR exit( 'No direct script access allowed' );
  * @package        O2Glob
  * @category       Factory Class
  * @author         Steeven Andrian Salim
+ * @author         Circle Creative Developer Team
+ * @copyright      Copyright (c) 2015, PT. Lingkar Kreasi (Circle Creative).
  * @link           http://o2system.center/standalone/o2glob/user-guide/statics.html
  */
 trait Statics
@@ -69,24 +71,46 @@ trait Statics
      * @access  protected
      * @var     string name of called class
      */
-    protected static $_class_name;
+    protected $_class_name;
 
     /**
      * Class protection so cannot be able to construct
      *
-     * @access protected
+     * @access  protected
+     * @final
+     */
+    final protected function __construct()
+    {
+
+    }
+
+    /**
+     * Get Class Instance
+     *
+     * @access  public
+     *
+     * @param   array       is'nt really necessary unless when need a parameter
+     *                      to be parsing to __initialize() method
      *
      * @replace false       final method cannot be replaced
      *
-     * @return void
+     * @return  object of called class
      */
-    final protected function __construct(){ }
+    final public static function &instance( $params = array() )
+    {
+        if( ! isset( static::$_instance ) )
+        {
+            static::_init( $params );
+        }
+
+        return static::$_instance;
+    }
 
     /**
      * Class Init
      * Method to construct a static class
      *
-     * @access public
+     * @access  public
      *
      * @param   array       is'nt really necessary unless when need a parameter
      *                      to be parsing to __initialize() method
@@ -97,15 +121,55 @@ trait Statics
      */
     final public static function &_init( $params = array() )
     {
-        static::$_class_name = get_called_class();
-
-        if ( ! isset( static::$_instance ) )
+        if( ! isset( static::$_instance ) )
         {
-            static::$_reflection = new \ReflectionClass( static::$_class_name );
-            static::$_instance   = static::$_reflection->newInstanceWithoutConstructor();
+            static::$_reflection = new \ReflectionClass( get_called_class() );
+
+            $methods = array(
+                'public'    => \ReflectionMethod::IS_PUBLIC,
+                'protected' => \ReflectionMethod::IS_PROTECTED,
+                'private'   => \ReflectionMethod::IS_PRIVATE,
+                'static'    => \ReflectionMethod::IS_STATIC
+            );
+
+            foreach( $methods as $method => $reflect )
+            {
+                $reflection = static::$_reflection->getMethods( $reflect );
+
+                if( ! empty( $reflection ) )
+                {
+                    foreach( $reflection as $object )
+                    {
+                        static::$_methods[ $method ][ ] = $object->name;
+                    }
+                }
+            }
+
+            $properties = array(
+                'public'    => \ReflectionProperty::IS_PUBLIC,
+                'protected' => \ReflectionProperty::IS_PROTECTED,
+                'private'   => \ReflectionProperty::IS_PRIVATE,
+                'static'    => \ReflectionProperty::IS_STATIC
+            );
+
+            foreach( $properties as $property => $reflect )
+            {
+                $reflection = static::$_reflection->getProperties( $reflect );
+
+                if( ! empty( $reflection ) )
+                {
+                    foreach( $reflection as $object )
+                    {
+                        static::$_properties[ $property ][ ] = $object->name;
+                    }
+                }
+            }
+
+            static::$_instance = static::$_reflection->newInstanceWithoutConstructor();
+            static::$_instance->_class_name = get_called_class();
         }
 
-        if ( static::$_reflection->hasMethod( '__initialize' ) )
+        if( method_exists( static::$_instance, '__initialize' ) )
         {
             static::__initialize( $params );
         }
@@ -114,37 +178,30 @@ trait Statics
     }
 
     /**
-     * Get Class Instance
+     * Disabled clone
      *
-     * @access public
+     * @access  protected
      *
-     * @param   array       is'nt really necessary unless when need a parameter
-     *                      to be parsing to __initialize() method
+     * @replace false  final method cannot be replaced
      *
-     * @replace false       final method cannot be replaced
-     *
-     * @return  object of called class
+     * @return void
      */
-    final public static function &get_instance( $params = array() )
+    final protected function __clone()
     {
-        if ( ! isset( static::$_instance ) )
-        {
-            static::_init( $params );
-        }
-
-        return static::$_instance;
     }
 
     /**
      * Disabled reinstate handles and object references
      *
-     * @access protected
+     * @access  protected
      *
      * @replace false       final method cannot be replaced
      *
      * @return void
      */
-    final protected function __wakeup(){ }
+    final protected function __wakeup()
+    {
+    }
 }
 /* End of file Statics.php */
 /* Location: ./O2Glob/Factory/Statics.php */
