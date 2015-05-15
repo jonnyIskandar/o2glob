@@ -49,13 +49,12 @@ defined( 'GLOB_PATH' ) OR exit( 'No direct script access allowed' );
  * This class enables you to create "Driver" libraries that add runtime ability
  * to extend the capabilities of a class via additional driver objects
  *
- * @package        O2System
- * @subpackage     system/core
- * @category       Core Class
+ * @package        O2Glob
+ * @category       Factory Class
  * @author         Steeven Andrian Salim
  * @author         Circle Creative Developer Team
  * @copyright      Copyright (c) 2015, PT. Lingkar Kreasi (Circle Creative). 
- * @link           http://circle-creative.com/products/o2system/user-guide/core/library.html
+ * @link           http://o2system.center/standalone/o2glob/wiki#Libraries
  */
 abstract class Libraries
 {
