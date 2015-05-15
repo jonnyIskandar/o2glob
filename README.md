@@ -1,5 +1,5 @@
 # Welcome to O2GLOB #
----------------------
+
 [O2Glob][2] is a Magical Singleton and Anti-Pattern Framework, a sets of core framework of O2System Framework since v3.0.0 which is distributed as a standalone mini core framework. Its goal is to enable you to develop your own framework or to make your library class more powerful, make your class methods and properties can be called in various ways and can get various results.
 
 **Usage Example**
@@ -66,7 +66,7 @@ At example above you call the constructor or init the class at the first
 Config::_item('name'); // getting the same result
 ```
 > Note
-The Glob is Magically convert your non static class
+The O2Glob is Magically convert your non static class
 
 **Property example**
 
