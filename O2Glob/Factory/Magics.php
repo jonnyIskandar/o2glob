@@ -53,6 +53,8 @@ defined( 'GLOB_PATH' ) OR exit( 'No direct script access allowed' );
  * @package        O2Glob
  * @category       Factory Class
  * @author         Steeven Andrian Salim
+ * @author         Circle Creative Developer Team
+ * @copyright      Copyright (c) 2015, PT. Lingkar Kreasi (Circle Creative).
  * @link           http://o2system.center/standalone/o2glob/user-guide/magics.html
  */
 trait Magics
@@ -74,123 +76,43 @@ trait Magics
     protected static $_instance;
 
     /**
+     * Class Storage Object
+     *
+     * @access  protected
+     * @var     object of called class
+     */
+    protected static $_storage;
+
+    /**
+     * Class Methods Lists
+     *
+     * @access  protected
+     * @var     array
+     */
+    protected static $_methods;
+
+    /**
+     * Class Properties Lists
+     *
+     * @access  protected
+     * @var     array
+     */
+    protected static $_properties;
+
+    /**
      * Magic method to set class properties
      * Static property or non static property
      *
      * @access  public
      *
-     * @param   $property   string of property name
-     * @param   $args       array of parameters
+     * @param   string $name  property name
+     * @param   mixed  $value property value
      *
-     * @replace false       final method cannot be replaced
-     *
-     * @return mixed
+     * @return void
      */
-    final public function __set( $name, $value )
+    public function __set( $name, $value )
     {
-        // Set Static Properties
-        if ( isset( static::${$name} ) )
-        {
-            $this->__set_static( $name, $value );
-        }
-        elseif ( isset( static::${'_' . $name} ) )
-        {
-            $this->__set_static( '_' . $name, $value );
-        }
-        elseif ( isset( static::${'__' . $name} ) )
-        {
-            $this->__set_static( '__' . $name, $value );
-        }
-        else
-        {
-            $this->__set_non_static( $name, $value );
-        }
-    }
-
-    /**
-     * Set Static Property
-     *
-     * @access  private
-     *
-     * @param   $property   string of property name
-     * @param   $args       array of parameters
-     *
-     * @replace false       final method cannot be replaced
-     *
-     * @return mixed
-     */
-    final private function __set_static( $name, $value )
-    {
-        if ( is_array( static::${$name} ) )
-        {
-            if ( is_string( $value ) )
-            {
-                array_push( static::${$name}, $value );
-            }
-            elseif ( is_array( $value ) )
-            {
-                static::${$name} = array_merge( static::${$name}, $value );
-            }
-        }
-        else
-        {
-            static::${$name} = $value;
-        }
-    }
-
-    /**
-     * Set Non-Static Property
-     *
-     * @access  private
-     *
-     * @param   $property   string of property name
-     * @param   $args       array of parameters
-     *
-     * @replace false       final method cannot be replaced
-     *
-     * @return mixed
-     */
-    final private function __set_non_static( $name, $value )
-    {
-        if ( isset( $this->{$name} ) )
-        {
-            if ( is_array( $this->{$name} ) )
-            {
-                if ( is_string( $value ) )
-                {
-                    array_push( $this->{$name}, $value );
-                }
-                elseif ( is_array( $value ) )
-                {
-                    $this->{$name} = array_merge( $this->{$name}, $value );
-                }
-            }
-            else
-            {
-                $this->{$name} = $value;
-            }
-        }
-        else
-        {
-            $this->{$name} = $value;
-        }
-    }
-
-    /**
-     * Magic Method __set alias
-     *
-     * @access  public
-     *
-     * @param   $property   string of property name
-     * @param   $args       array of parameters
-     *
-     * @replace false       final method cannot be replaced
-     *
-     * @return mixed
-     */
-    final public static function set( $name, $value )
-    {
-        static::$_instance->__set( $name, $value );
+        $this->{$name} = $value;
     }
 
     /**
@@ -200,55 +122,19 @@ trait Magics
      * @access  public
      *
      * @param   $property   string of property name
-     * @param   $args       array of parameters
-     *
-     * @replace false     final method cannot be replaced
      *
      * @return mixed
      */
-    final public function __get( $name )
+    public function __get( $property )
     {
-        if ( isset( $this->{$name} ) )
+        if( isset( static::$_properties[ 'static' ] ) AND in_array( $property, static::$_properties[ 'static' ] ) )
         {
-            return $this->{$name};
+            return static::${$property};
         }
-        elseif ( isset( static::${$name} ) )
+        elseif( isset( static::$_properties[ 'public' ] ) AND in_array( $property, static::$_properties[ 'public' ] ) )
         {
-            return static::${$name};
+            return $this->{$property};
         }
-
-        if ( isset( static::$_access_protected_properties ) AND static::$_access_protected_properties === TRUE )
-        {
-            $name = '_' . $name;
-
-            if ( isset( $this->{$name} ) )
-            {
-                return $this->{$name};
-            }
-            elseif ( isset( static::${$name} ) )
-            {
-                return static::${$name};
-            }
-        }
-
-        return NULL;
-    }
-
-    /**
-     * Property getter method alias
-     *
-     * @access  private
-     *
-     * @param   $property   string of property name
-     * @param   $args       array of parameters
-     *
-     * @replace false     final method cannot be replaced
-     *
-     * @return mixed
-     */
-    final public static function get( $name, $args )
-    {
-        return static::__get_property( $name, $args );
     }
 
     /**
@@ -263,48 +149,65 @@ trait Magics
      *
      * @return mixed
      */
-    final private static function __get_property( $property, $args = array() )
+    final static private function __getProperty( $property, $args = array() )
     {
-        if ( empty( $args ) )
+        if( empty( $args ) )
         {
             return static::$_instance->__get( $property );
         }
         else
         {
             $entry = static::$_instance->__get( $property );
-            list( $index, $action ) = $args;
-            $params = isset( $args[ 2 ] ) ? $args[ 2 ] : array();
+            @list( $index, $action, $params ) = $args;
 
-            // if the value is string nothing to be proceed
-            if ( is_string( $entry ) OR is_null( $entry ) ) return $entry;
+            // if the entry is string nothing else to be proceed
+            if( is_string( $entry ) ) return $entry;
 
-            if ( isset( $entry[ $index ] ) )
+            if( is_array( $entry ) )
             {
-                $data = $entry[ $index ];
+                $data = $entry;
+
+                if( isset( $entry[ $index ] ) )
+                {
+                    $data = $entry[ $index ];
+                }
+                else
+                {
+                    @list( $action, $params ) = $args;
+                }
             }
-            elseif ( isset( $entry->{$index} ) )
+            elseif( is_object( $entry ) )
             {
-                $data = $entry->{$index};
+                $data = $entry;
+
+                if( isset( $entry->{$index} ) )
+                {
+                    $data = $entry->{$index};
+                }
+                else
+                {
+                    @list( $action, $params ) = $args;
+                }
             }
 
-            // if the index value is string nothing to be proceed
-            if ( is_string( $data ) ) return $data;
+            // if the data is string or there is no action nothing to be proceed
+            if( is_string( $data ) OR empty( $action ) ) return $data;
 
-            if ( in_array( $action, array( 'array', 'object', 'keys' ) ) )
+            if( in_array( $action, array( 'array', 'object', 'keys' ) ) )
             {
-                switch ( $action )
+                switch( $action )
                 {
                     default:
                     case 'object';
-                        if ( is_array( $data ) )
+                        if( is_array( $data ) )
                         {
-                            return (object) $data;
+                            return (object)$data;
                         }
 
                         return $data;
                         break;
                     case 'array';
-                        if ( is_object( $data ) )
+                        if( is_object( $data ) )
                         {
                             return get_object_vars( $data );
                         }
@@ -312,7 +215,7 @@ trait Magics
                         return $data;
                         break;
                     case 'keys';
-                        if ( is_object( $data ) )
+                        if( is_object( $data ) )
                         {
                             $data = get_object_vars( $data );
                         }
@@ -321,47 +224,30 @@ trait Magics
                         break;
                 }
             }
-            elseif ( in_array( strtolower( $action ), array( 'json', 'serialize' ) ) )
+            elseif( in_array( strtolower( $action ), array( 'json', 'serialize' ) ) )
             {
-                switch ( $action )
+                switch( $action )
                 {
                     default:
                     case 'json':
                         return json_encode( $data );
                         break;
                     case 'serialize';
-                        if ( method_exists( $data, 'serialize' ) )
-                        {
-                            return $data->serialize();
-                        }
-                        else
-                        {
-                            return serialize( $data );
-                        }
+                        return serialize( $data );
                         break;
                 }
             }
-            elseif ( method_exists( $data, $action ) )
+            elseif( isset( $data->{$action} ) )
             {
-                return call_user_func_array( $data, $params );
+                return $data->{$action};
             }
-            elseif ( $action !== FALSE )
+            elseif( isset( $data[ $action ] ) )
             {
-                if ( isset( $data->{$action} ) )
-                {
-                    return $data->{$action};
-                }
-                elseif ( isset( $data[ $action ] ) )
-                {
-                    return $data[ $action ];
-                }
-            }
-            elseif ( $action === FALSE )
-            {
-                return $data;
+                return $data[ $action ];
             }
         }
     }
+
 
     /**
      * Validate a non static method calls
@@ -375,7 +261,7 @@ trait Magics
      *
      * @return mixed
      */
-    final public function __call( $method, $args = array() )
+    public function __call( $method, $args = array() )
     {
         return static::__callStatic( $method, $args );
     }
@@ -394,55 +280,53 @@ trait Magics
      */
     final public static function __callStatic( $method, $args = array() )
     {
-        // Keep maintain class visibility methods
-        static $_methods;
-
-        if ( ! isset( $_methods ) )
+        // return null for avoiding reference loop
+        if( empty( static::$_instance ) AND empty( static::$_reflection ) )
         {
-            foreach ( static::$_reflection->getMethods( \ReflectionMethod::IS_PUBLIC ) as $reflect_method )
+            $class = get_called_class();
+            $class::_init();
+        }
+
+        // check if is a storage call
+        if( isset( static::$_storage ) )
+        {
+            if( $method === 'storage' )
             {
-                $_methods[ $reflect_method->name ] =& $reflect_method;
+                return static::$_storage->getArrayCopy();
+            }
+            elseif( isset( static::$_storage[ $method ] ) )
+            {
+                if( empty( $args ) )
+                {
+                    return static::$_storage->__get( $method );
+                }
+
+                return static::$_storage->__call( $method, $args );
+            }
+            elseif( method_exists( static::$_storage, $method ) )
+            {
+                return static::$_storage->__call( $method, $args );
             }
         }
 
-        // Let's make non static method to be able to be called statically
-        if ( isset( $_methods[ $method ] ) )
+        // check if is a non static call method
+        if( isset( static::$_methods[ 'public' ] ) AND in_array( $non_static_method = str_replace( '_', '', $method ), static::$_methods[ 'public' ] ) )
         {
-            return call_user_func_array( array( static::$_instance, $method ), $args );
-        }
-        elseif ( isset( $_methods[ substr( $method, 1 ) ] ) )
-        {
-            return call_user_func_array( array( static::$_instance, substr( $method, 1 ) ), $args );
+            return call_user_func_array( array( static::$_instance, $non_static_method ), $args );
         }
 
-        // Keep maintain class visibility property
-        if ( isset( static::$_access_protected_properties ) AND static::$_access_protected_properties === TRUE )
+        // check if is a property call method
+        if( isset( static::$_properties[ 'public' ] ) AND in_array( $method, static::$_properties[ 'public' ] ) )
         {
-            $_public_properties    = static::$_reflection->getProperties( \ReflectionProperty::IS_PUBLIC );
-            $_protected_properties = static::$_reflection->getProperties( \ReflectionProperty::IS_PROTECTED );
-
-            if ( is_array( $_public_properties ) )
+            if( empty( $args ) )
             {
-                $properties = array_merge( $_public_properties, $_protected_properties );
-            }
-        }
-        else
-        {
-            $properties = static::$_reflection->getProperties( \ReflectionProperty::IS_PUBLIC );
-        }
-
-        if ( ! empty( $properties ) )
-        {
-            foreach ( $properties as $property )
-            {
-                $_properties[ $property->name ] = $property;
+                return static::$_instance->__get( $method );
             }
 
-            if ( isset( $_properties[ $method ] ) )
-            {
-                return static::__get_property( $method, $args );
-            }
+            return static::__getProperty( $method, $args );
         }
+
+        return NULL;
     }
 }
 
