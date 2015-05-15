@@ -56,7 +56,7 @@ defined( 'GLOB_PATH' ) OR exit( 'No direct script access allowed' );
  * @author         Steeven Andrian Salim
  * @author         Circle Creative Developer Team
  * @copyright      Copyright (c) 2015, PT. Lingkar Kreasi (Circle Creative). 
- * @link           http://o2system.center/standalone/o2glob/user-guide/basics.html
+ * @link           http://o2system.center/standalone/o2glob/wiki#Basics
  */
 trait Basics
 {
