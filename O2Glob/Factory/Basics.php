@@ -54,6 +54,8 @@ defined( 'GLOB_PATH' ) OR exit( 'No direct script access allowed' );
  * @package        O2Glob
  * @category       Factory Class
  * @author         Steeven Andrian Salim
+ * @author         Circle Creative Developer Team
+ * @copyright      Copyright (c) 2015, PT. Lingkar Kreasi (Circle Creative). 
  * @link           http://o2system.center/standalone/o2glob/user-guide/basics.html
  */
 trait Basics
@@ -71,26 +73,88 @@ trait Basics
      */
     protected $_class_name;
 
-    final public function __construct( $params = array() )
+    final public function __construct( array $params = array() )
     {
         $this->_class_name = get_called_class();
 
-        if ( ! isset( static::$_instance ) )
+        if( method_exists( $this, '__initialize' ) )
         {
-            static::$_reflection = new \ReflectionClass( $this->_class_name );
-            static::$_instance   = static::$_reflection->newInstanceWithoutConstructor();
+            $this->__initialize($params);
         }
 
-        if ( method_exists( $this, '__initialize' ) )
+        if( ! isset( static::$_reflection ) )
         {
-            call_user_func_array( array( $this, '__initialize' ), $params );
+            static::$_reflection = new \ReflectionClass( $this->_class_name );
+
+            $methods = array(
+                'public' => \ReflectionMethod::IS_PUBLIC,
+                'protected' => \ReflectionMethod::IS_PROTECTED,
+                'private' => \ReflectionMethod::IS_PRIVATE,
+                'static' => \ReflectionMethod::IS_STATIC
+            );
+
+            foreach($methods as $method => $reflect)
+            {
+                $reflection = static::$_reflection->getMethods($reflect);
+
+                if(! empty($reflection))
+                {
+                    foreach($reflection as $object)
+                    {
+                        static::$_methods[$method][] = $object->name;
+                    }
+                }
+            }
+
+            $properties = array(
+                'public' => \ReflectionProperty::IS_PUBLIC,
+                'protected' => \ReflectionProperty::IS_PROTECTED,
+                'private' => \ReflectionProperty::IS_PRIVATE,
+                'static' => \ReflectionProperty::IS_STATIC
+            );
+
+            foreach($properties as $property => $reflect)
+            {
+                $reflection = static::$_reflection->getProperties($reflect);
+
+                if(! empty($reflection))
+                {
+                    foreach($reflection as $object)
+                    {
+                        static::$_properties[$property][] = $object->name;
+                    }
+                }
+            }
         }
+
+        if(! isset(static::$_instance))
+        {
+            static::$_instance =& $this;
+        }
+    }
+
+    /**
+     * Class Init
+     * Method to construct a static class
+     *
+     * @access  public
+     *
+     * @param   array       is'nt really necessary unless when need a parameter
+     *                      to be parsing to __initialize() method
+     *
+     * @replace false       final method cannot be replaced
+     *
+     * @return void
+     */
+    final public static function &_init( $params = array() )
+    {
+        return static::instance( $params );
     }
 
     /**
      * Get Class Instance
      *
-     * @access public
+     * @access  public
      *
      * @param   array       is'nt really necessary unless when need a parameter
      *                      to be parsing to __initialize() method
@@ -99,11 +163,11 @@ trait Basics
      *
      * @return  object of called class
      */
-    final public static function &get_instance( $params = array() )
+    final public static function &instance( $params = array() )
     {
-        if ( ! isset( static::$_instance ) )
+        if( ! isset( static::$_instance ) )
         {
-            $class_name        = get_called_class();
+            $class_name = get_called_class();
             static::$_instance = new $class_name( $params );
         }
 
@@ -111,15 +175,30 @@ trait Basics
     }
 
     /**
+     * Disabled clone
+     *
+     * @access  protected
+     *
+     * @replace false  final method cannot be replaced
+     *
+     * @return void
+     */
+    final private function __clone()
+    {
+    }
+
+    /**
      * Disabled reinstate handles and object references
      *
-     * @access protected
+     * @access  protected
      *
      * @replace false       final method cannot be replaced
      *
      * @return void
      */
-    final protected function __wakeup(){ }
+    final private function __wakeup()
+    {
+    }
 }
 /* End of file Basics.php */
 /* Location: ./O2Glob/Factory/Basics.php */
