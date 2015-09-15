@@ -1,6 +1,7 @@
 {
   "name": "o2system/o2glob",
   "description": "Mini Singleton Core Framework aka Super Global Object",
+  "license": "MIT",
   "authors": [
     {
       "name": "PT. Lingkar Kreasi (Circle Creative)",
