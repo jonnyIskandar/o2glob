@@ -26,7 +26,6 @@
     "wiki": "http://o2system.center/standalone/o2glob/user-guide/getting-started.html",
     "github-wiki": "http://github.com/circlecreative/o2glob/wiki"
   },
-  "minimum-stability": "RC",
   "require": {
     "php": ">=5.4.0"
   },
