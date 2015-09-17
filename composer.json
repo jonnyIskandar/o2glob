@@ -2,6 +2,10 @@
   "name": "o2system/o2glob",
   "description": "Mini Singleton Core Framework aka Super Global Object",
   "license": "MIT",
+  "minimum-stability": "dev",
+  "version": "2.0.0",
+  "type": "php-libraries",
+  "keywords": ["singleton","php","framework","driver","libraries"],
   "authors": [
     {
       "name": "PT. Lingkar Kreasi (Circle Creative)",
@@ -30,8 +34,8 @@
     "php": ">=5.4.0"
   },
   "autoload": {
-    "psr-0": {
-      "\\O2Glob\\Core\\Loader::__autoload": "O2Glob/Core/Loader"
+    "psr-4": {
+      "O2System\\O2Glob": "src"
     }
   }
 }

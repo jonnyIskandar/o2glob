@@ -1,8 +1,6 @@
-# O2GLOB #
-
+# Welcome to O2GLOB #
+---------------------
 [O2Glob][2] is a Magical Singleton and Anti-Pattern Framework, a sets of core framework of O2System Framework since v3.0.0 which is distributed as a standalone mini core framework. Its goal is to enable you to develop your own framework or to make your library class more powerful, make your class methods and properties can be called in various ways and can get various results.
-
-[![Latest Stable Version](https://poser.pugx.org/o2system/o2glob/v/stable)](https://packagist.org/packages/o2system/o2glob) [![Total Downloads](https://poser.pugx.org/o2system/o2glob/downloads)](https://packagist.org/packages/o2system/o2glob) [![Latest Unstable Version](https://poser.pugx.org/o2system/o2glob/v/unstable)](https://packagist.org/packages/o2system/o2glob) [![License](https://poser.pugx.org/o2system/o2glob/license)](https://packagist.org/packages/o2system/o2glob)
 
 **Usage Example**
 For example you build a small class called Config
@@ -19,10 +17,10 @@ class Config
     /**
      * Class constructor
      * if you trait the O2Glob factory class then you cannot use __construct() anymore
-     * you must use __initialize() as your class constructor
+     * you must use __reconstruct() as your class constructor
      *
      */
-    protected function __initialize()
+    protected function __reconstruct()
     {
         \\ your logic
     }
@@ -68,7 +66,7 @@ At example above you call the constructor or init the class at the first
 Config::_item('name'); // getting the same result
 ```
 > Note
-The O2Glob is Magically convert your non static class
+The Glob is Magically convert your non static class
 
 **Property example**
 
@@ -97,6 +95,17 @@ Please kindly submit your issues at Github so we can track all the issues along 
 System Requirements
 -------------------
 - PHP 5.4+
+- Composer
+
+Credits
+-------
+* Founder and Lead Projects: [Steeven Andrian Salim][7] - [steevenz.com][6]
+ 
+Special Thanks
+--------------
+* My Lovely Wife zHa,My Little Princess Angie, My Little Prince Neal - Thanks for all your supports, i love you all
+* Viktor Iwan Kristanda (PT. Doxadigital Indonesia)
+* Yudi Primaputra (PT. Yuk Bisnis Indonesia)
 
 [1]: http://circle-creative.com
 [2]: http://circle-creative.com/products/o2glob
