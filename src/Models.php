@@ -30,7 +30,7 @@
  * @author         Steeven Andrian Salim
  * @copyright      Copyright (c) 2005 - 2014, PT. Lingkar Kreasi (Circle Creative).
  * @license        http://circle-creative.com/products/o2system/license.html
- * @license        http://opensource.org/licenses/MIT	MIT License
+ * @license        http://opensource.org/licenses/MIT   MIT License
  * @link           http://circle-creative.com
  * @since          Version 2.0
  * @filesource
@@ -54,7 +54,7 @@ namespace O2System\O2Glob;
  * @author         Circle Creative Dev Team
  * @link           http://o2system.center/wiki/#GlobLibraries
  */
-abstract class Libraries
+abstract class Models
 {
     /**
      * Using Glob Magics Trait Class
@@ -70,7 +70,7 @@ abstract class Libraries
      *
      * @type    string   driver class name
      */
-    protected $_library_name;
+    protected $_model_name;
 
     /**
      * List of library valid drivers
@@ -80,8 +80,6 @@ abstract class Libraries
      * @type    array   driver classes list
      */
     protected $_valid_drivers = array();
-
-    protected $_config = array();
 
     /**
      * Libraries Class Constructor
@@ -101,7 +99,7 @@ abstract class Libraries
     public function __construct()
     {
         // Library Class
-        $this->_library_name = get_called_class();
+        $this->_model_name = get_called_class();
 
         if( ! isset( static::$_reflection ) )
         {
@@ -120,12 +118,6 @@ abstract class Libraries
         }
     }
     // ------------------------------------------------------------------------
-
-    final protected function _get_drivers_path()
-    {
-        $class_realpath = static::$_reflection->getFileName();
-        return dirname($class_realpath) . '/' . strtolower( pathinfo($class_realpath, PATHINFO_FILENAME) ) . '/';
-    }
 
     /**
      * Get Override
@@ -155,6 +147,12 @@ abstract class Libraries
     }
     // ------------------------------------------------------------------------
 
+    final protected function _get_drivers_path()
+    {
+        $class_realpath = static::$_reflection->getFileName();
+        return dirname($class_realpath) . '/' . strtolower( pathinfo($class_realpath, PATHINFO_FILENAME) ) . '/';
+    }
+
     /**
      * Load driver
      *
@@ -172,7 +170,7 @@ abstract class Libraries
             {
                 require_once($filepath);
 
-                $class_name = get_called_class() . '\\Drivers\\' . ucfirst($driver);
+                $class_name = get_called_class() . '\\' . ucfirst($driver);
 
                 if(class_exists($class_name, FALSE))
                 {

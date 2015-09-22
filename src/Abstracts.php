@@ -39,7 +39,6 @@
 // ------------------------------------------------------------------------
 
 namespace O2System\O2Glob;
-defined( 'BASEPATH' ) || exit( 'No direct script access allowed' );
 
 // ------------------------------------------------------------------------
 
@@ -166,6 +165,3 @@ trait Abstracts
         return static::$_instance;
     }
 }
-
-/* End of file Abstracts.php */
-/* Location: ./o2system/core/glob/Abstracts.php */

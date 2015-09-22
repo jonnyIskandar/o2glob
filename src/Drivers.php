@@ -39,7 +39,6 @@
 // ------------------------------------------------------------------------
 
 namespace O2System\O2Glob;
-defined( 'BASEPATH' ) || exit( 'No direct script access allowed' );
 
 // ------------------------------------------------------------------------
 
@@ -209,6 +208,3 @@ abstract class Drivers
         }
     }
 }
-
-/* End of file Drivers.php */
-/* Location: ./o2system/core/glob/Drivers.php */

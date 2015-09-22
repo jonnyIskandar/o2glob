@@ -39,7 +39,6 @@
 // ------------------------------------------------------------------------
 
 namespace O2System\O2Glob;
-defined( 'BASEPATH' ) || exit( 'No direct script access allowed' );
 
 // ------------------------------------------------------------------------
 
@@ -475,6 +474,3 @@ trait Magics
         return NULL;
     }
 }
-
-/* End of file Magics.php */
-/* Location: ./o2system/core/glob/Magics.php */

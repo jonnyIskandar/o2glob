@@ -39,7 +39,6 @@
 // ------------------------------------------------------------------------
 
 namespace O2System\O2Glob;
-defined( 'BASEPATH' ) || exit( 'No direct script access allowed' );
 
 // ------------------------------------------------------------------------
 
@@ -185,6 +184,3 @@ trait Basics
     {
     }
 }
-
-/* End of file Basics.php */
-/* Location: ./o2system/core/glob/Basics.php */

@@ -39,7 +39,6 @@
 // ------------------------------------------------------------------------
 
 namespace O2System\O2Glob;
-defined( 'BASEPATH' ) || exit( 'No direct script access allowed' );
 
 // ------------------------------------------------------------------------
 
@@ -173,6 +172,3 @@ trait Statics
     {
     }
 }
-
-/* End of file Statics.php */
-/* Location: ./o2system/core/glob/Statics.php */
