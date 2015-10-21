@@ -1,8 +1,8 @@
 <?php
 /**
- * O2Glob
+ * O2System
  *
- * Singleton Global Class Libraries for PHP 5.4 or newer
+ * An open source application development framework for PHP 5.4 or newer
  *
  * This content is released under the MIT License (MIT)
  *
@@ -29,24 +29,18 @@
  * @package        O2System
  * @author         Steeven Andrian Salim
  * @copyright      Copyright (c) 2005 - 2014, PT. Lingkar Kreasi (Circle Creative).
- * @license        http://circle-creative.com/products/o2glob/license.html
- * @license        http://opensource.org/licenses/MIT	MIT License
+ * @license        http://circle-creative.com/products/o2system/license.html
+ * @license        http://opensource.org/licenses/MIT   MIT License
  * @link           http://circle-creative.com
- * @since          Version 1.0
+ * @since          Version 2.0
  * @filesource
  */
 
 // ------------------------------------------------------------------------
 
-<<<<<<< HEAD:src/Interfaces/Models.php
-namespace O2System\Glob\Interfaces;
-=======
 namespace O2System\O2Glob;
->>>>>>> origin/master:src/Libraries.php
 
 // ------------------------------------------------------------------------
-
-use O2System\Glob\Factory\Magics;
 
 /**
  * Libraries
@@ -76,7 +70,7 @@ abstract class Models
      *
      * @type    string   driver class name
      */
-    protected $_model_name = NULL;
+    protected $_model_name;
 
     /**
      * List of library valid drivers
@@ -105,21 +99,7 @@ abstract class Models
     public function __construct()
     {
         // Library Class
-<<<<<<< HEAD:src/Interfaces/Models.php
         $this->_model_name = get_called_class();
-
-        // let the magic begin
-        static::_reflection();
-
-        foreach( glob( $this->_get_drivers_path() . '*.php' ) as $filepath )
-        {
-            $this->_valid_drivers[ strtolower( pathinfo( $filepath, PATHINFO_FILENAME ) ) ] = $filepath;
-        }
-
-        // set class instance
-        static::$_instance =& $this;
-=======
-        $this->_library_name = get_called_class();
 
         if( ! isset( static::$_reflection ) )
         {
@@ -136,15 +116,8 @@ abstract class Models
         {
             static::$_instance =& $this;
         }
->>>>>>> origin/master:src/Libraries.php
     }
     // ------------------------------------------------------------------------
-
-    final protected function _get_drivers_path()
-    {
-        $class_realpath = static::$_reflection->getFileName();
-        return dirname($class_realpath) . '/' . strtolower( pathinfo($class_realpath, PATHINFO_FILENAME) ) . '/';
-    }
 
     /**
      * Get Override
@@ -158,7 +131,7 @@ abstract class Models
      *
      * @return mixed    property or driver class object
      */
-    public function &__getOverride( $property )
+    public function __getOverride( $property )
     {
         if( property_exists( $this, $property ) )
         {
@@ -170,19 +143,14 @@ abstract class Models
             return $this->_load_driver( $property );
         }
 
-        // Dummy property for avoiding error
-        $dummy_property = NULL;
-
-        return $dummy_property;
+        return NULL;
     }
-
     // ------------------------------------------------------------------------
 
     final protected function _get_drivers_path()
     {
         $class_realpath = static::$_reflection->getFileName();
-
-        return dirname( $class_realpath ) . '/' . strtolower( pathinfo( $class_realpath, PATHINFO_FILENAME ) ) . '/';
+        return dirname($class_realpath) . '/' . strtolower( pathinfo($class_realpath, PATHINFO_FILENAME) ) . '/';
     }
 
     /**
@@ -196,38 +164,17 @@ abstract class Models
      */
     protected function _load_driver( $driver )
     {
-        if( file_exists( $this->_valid_drivers[ $driver ] ) )
+        if( empty( $this->{$driver} ) )
         {
-<<<<<<< HEAD:src/Interfaces/Models.php
-            require_once( $this->_valid_drivers[ $driver ] );
-
-            if( strpos( $this->_model_name, '\\' ) !== FALSE )
-            {
-                $class_name = '\\' . $this->_model_name . '\\' . ucfirst( $driver );
-            }
-            else
-            {
-                $class_name = ucfirst( $driver ) . '_Model';
-            }
-
-            if( class_exists( $class_name ) )
-            {
-                $this->{$driver} = new $class_name();
-
-                if( isset( $this->db ) )
-                {
-                    $this->{$driver}->db = $this->db;
-=======
             if(file_exists($filepath = $this->_valid_drivers[$driver]))
             {
                 require_once($filepath);
 
-                $class_name = get_called_class() . '\\Drivers\\' . ucfirst($driver);
+                $class_name = get_called_class() . '\\' . ucfirst($driver);
 
                 if(class_exists($class_name, FALSE))
                 {
                     $this->{$driver} = new $class_name();
->>>>>>> origin/master:src/Libraries.php
                 }
             }
         }

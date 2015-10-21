@@ -38,7 +38,11 @@
 
 // ------------------------------------------------------------------------
 
+<<<<<<< HEAD:src/Factory/Magics.php
 namespace O2System\Glob\Factory;
+=======
+namespace O2System\O2Glob;
+>>>>>>> origin/master:src/Magics.php
 
 // ------------------------------------------------------------------------
 

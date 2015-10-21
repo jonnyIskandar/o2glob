@@ -38,7 +38,11 @@
 
 // ------------------------------------------------------------------------
 
+<<<<<<< HEAD:src/Singleton/Statics.php
 namespace O2System\Glob\Singleton;
+=======
+namespace O2System\O2Glob;
+>>>>>>> origin/master:src/Statics.php
 
 // ------------------------------------------------------------------------
 
