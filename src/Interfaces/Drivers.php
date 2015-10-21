@@ -38,11 +38,7 @@
 
 // ------------------------------------------------------------------------
 
-<<<<<<< HEAD:src/Interfaces/Drivers.php
 namespace O2System\Glob\Interfaces;
-=======
-namespace O2System\O2Glob;
->>>>>>> origin/master:src/Drivers.php
 
 // ------------------------------------------------------------------------
 
@@ -237,7 +233,6 @@ abstract class Drivers
             $this->{$name} = $value;
         }
     }
-<<<<<<< HEAD:src/Interfaces/Drivers.php
 
     /**
      * Init
@@ -312,6 +307,4 @@ abstract class Drivers
     final protected function __wakeup()
     {
     }
-=======
->>>>>>> origin/master:src/Drivers.php
 }

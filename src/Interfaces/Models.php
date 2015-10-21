@@ -38,11 +38,7 @@
 
 // ------------------------------------------------------------------------
 
-<<<<<<< HEAD:src/Interfaces/Models.php
 namespace O2System\Glob\Interfaces;
-=======
-namespace O2System\O2Glob;
->>>>>>> origin/master:src/Libraries.php
 
 // ------------------------------------------------------------------------
 
@@ -105,7 +101,6 @@ abstract class Models
     public function __construct()
     {
         // Library Class
-<<<<<<< HEAD:src/Interfaces/Models.php
         $this->_model_name = get_called_class();
 
         // let the magic begin
@@ -118,7 +113,7 @@ abstract class Models
 
         // set class instance
         static::$_instance =& $this;
-=======
+
         $this->_library_name = get_called_class();
 
         if( ! isset( static::$_reflection ) )
@@ -136,7 +131,6 @@ abstract class Models
         {
             static::$_instance =& $this;
         }
->>>>>>> origin/master:src/Libraries.php
     }
     // ------------------------------------------------------------------------
 
@@ -198,7 +192,6 @@ abstract class Models
     {
         if( file_exists( $this->_valid_drivers[ $driver ] ) )
         {
-<<<<<<< HEAD:src/Interfaces/Models.php
             require_once( $this->_valid_drivers[ $driver ] );
 
             if( strpos( $this->_model_name, '\\' ) !== FALSE )
@@ -217,17 +210,6 @@ abstract class Models
                 if( isset( $this->db ) )
                 {
                     $this->{$driver}->db = $this->db;
-=======
-            if(file_exists($filepath = $this->_valid_drivers[$driver]))
-            {
-                require_once($filepath);
-
-                $class_name = get_called_class() . '\\Drivers\\' . ucfirst($driver);
-
-                if(class_exists($class_name, FALSE))
-                {
-                    $this->{$driver} = new $class_name();
->>>>>>> origin/master:src/Libraries.php
                 }
             }
         }

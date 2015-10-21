@@ -38,11 +38,7 @@
 
 // ------------------------------------------------------------------------
 
-<<<<<<< HEAD:src/Singleton/Abstracts.php
 namespace O2System\Glob\Singleton;
-=======
-namespace O2System\O2Glob;
->>>>>>> origin/master:src/Abstracts.php
 
 // ------------------------------------------------------------------------
 
