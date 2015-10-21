@@ -1,8 +1,8 @@
 <?php
 /**
- * O2System
+ * O2Glob
  *
- * An open source application development framework for PHP 5.4 or newer
+ * Singleton Global Class Libraries for PHP 5.4 or newer
  *
  * This content is released under the MIT License (MIT)
  *
@@ -29,17 +29,16 @@
  * @package        O2System
  * @author         Steeven Andrian Salim
  * @copyright      Copyright (c) 2005 - 2014, PT. Lingkar Kreasi (Circle Creative).
- * @license        http://circle-creative.com/products/o2system/license.html
+ * @license        http://circle-creative.com/products/o2glob/license.html
  * @license        http://opensource.org/licenses/MIT	MIT License
  * @link           http://circle-creative.com
- * @since          Version 2.0
+ * @since          Version 1.0
  * @filesource
  */
 
 // ------------------------------------------------------------------------
 
-namespace O2System\O2Glob;
-defined( 'BASEPATH' ) || exit( 'No direct script access allowed' );
+namespace O2System\Glob\Factory;
 
 // ------------------------------------------------------------------------
 
@@ -216,13 +215,12 @@ trait Magics
      *
      * @access      public
      * @static      static class method
-     * @final       this method can't be overwritten, to override this method create __getOverride( $property )
      *
      * @param   string $property property name
      *
      * @return mixed
      */
-    final public function __get( $property )
+    final public function &__get( $property )
     {
         if( isset( static::$_properties[ 'static' ] ) && in_array( $property, static::$_properties[ 'static' ] ) )
         {
@@ -244,6 +242,11 @@ trait Magics
         {
             return $this->__getOverride( $property );
         }
+
+        // Dummy property for avoiding error
+        $dummy_property = NULL;
+
+        return $dummy_property;
     }
 
     // ------------------------------------------------------------------------
@@ -461,7 +464,7 @@ trait Magics
 
         // check whether is to call class properties
         elseif( isset( static::$_properties[ 'public' ] ) && in_array( $method, static::$_properties[ 'public' ] ) ||
-            isset( static::$_properties[ 'static' ] ) && in_array( $method, static::$_properties[ 'static' ] )
+                isset( static::$_properties[ 'static' ] ) && in_array( $method, static::$_properties[ 'static' ] )
         )
         {
             if( empty( $args ) )
@@ -472,9 +475,6 @@ trait Magics
             return static::__getProperty( $method, $args );
         }
 
-        return NULL;
+        throw new \BadMethodCallException( 'Undefined class method: ' . get_called_class() . '::' . $method );
     }
 }
-
-/* End of file Magics.php */
-/* Location: ./o2system/core/glob/Magics.php */

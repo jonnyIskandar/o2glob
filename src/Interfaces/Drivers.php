@@ -1,8 +1,8 @@
 <?php
 /**
- * O2System
+ * O2Glob
  *
- * An open source application development framework for PHP 5.4 or newer
+ * Singleton Global Class Libraries for PHP 5.4 or newer
  *
  * This content is released under the MIT License (MIT)
  *
@@ -29,19 +29,20 @@
  * @package        O2System
  * @author         Steeven Andrian Salim
  * @copyright      Copyright (c) 2005 - 2014, PT. Lingkar Kreasi (Circle Creative).
- * @license        http://circle-creative.com/products/o2system/license.html
+ * @license        http://circle-creative.com/products/o2glob/license.html
  * @license        http://opensource.org/licenses/MIT	MIT License
  * @link           http://circle-creative.com
- * @since          Version 2.0
+ * @since          Version 1.0
  * @filesource
  */
 
 // ------------------------------------------------------------------------
 
-namespace O2System\O2Glob;
-defined( 'BASEPATH' ) || exit( 'No direct script access allowed' );
+namespace O2System\Glob\Interfaces;
 
 // ------------------------------------------------------------------------
+
+use O2System\Glob\Factory\Magics;
 
 /**
  * Drivers
@@ -63,6 +64,13 @@ abstract class Drivers
      * @uses \O2System\Glob\Magics
      */
     use Magics;
+
+    /**
+     * Driver Class Configuration
+     *
+     * @access protected
+     */
+    protected $_config = array();
 
     /**
      * Called Driver Name
@@ -94,7 +102,7 @@ abstract class Drivers
      * @property-read   static::$_reflection
      * @property-read   static::$_instance
      *
-     * @method  static::reflection()
+     * @method  static ::reflection()
      * @method  $this->__reconstruct()
      *
      * @param array     $config driver class configurations
@@ -109,7 +117,19 @@ abstract class Drivers
 
         // Instance parent library
         $lib_class = explode( '\Drivers', $this->_driver_name );
+
+        $lib_key = strtolower( end( $lib_class ) );
+        $lib_key = trim( $lib_key, '\\' );
+
         $lib_class = reset( $lib_class );
+
+        // Set Config
+        $config = $this->library->get_config( $lib_key );
+
+        if( ! empty( $config ) )
+        {
+            $this->_config = array_merge( $this->_config, $config );
+        }
 
         // checking custom constructor
         if( method_exists( $this, '__reconstruct' ) )
@@ -172,7 +192,7 @@ abstract class Drivers
      *
      * @return mixed
      */
-    final public function __getOverride( $property )
+    final public function &__getOverride( $property )
     {
         if( property_exists( $this, $property ) )
         {
@@ -182,6 +202,11 @@ abstract class Drivers
         {
             return $this->library->__get( $property );
         }
+
+        // Dummy property for avoiding error
+        $dummy_property = NULL;
+
+        return $dummy_property;
     }
     // --------------------------------------------------------------------
 
@@ -208,7 +233,78 @@ abstract class Drivers
             $this->{$name} = $value;
         }
     }
-}
 
-/* End of file Drivers.php */
-/* Location: ./o2system/core/glob/Drivers.php */
+    /**
+     * Init
+     * This method is used for initialized called class instance
+     *
+     * @access      public
+     * @static      static class method
+     * @final       this method can't be overwritten
+     *
+     * @method  static ::instance()
+     *
+     * @param   array   isn't really necessary unless when need a parameter
+     *                  to be parsing to __construct() method
+     *
+     * @return object   called class instance
+     */
+    final public static function &_init( &$library )
+    {
+        return static::instance( $library );
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Instance
+     * Instance class caller
+     *
+     * @access      public
+     * @static      static class method
+     * @final       this method can't be overwritten
+     *
+     * @property-read   static::$_instance
+     *
+     * @param   array   isn't really necessary unless when need a parameter
+     *                  to be parsing to __construct() method
+     *
+     * @return  object  called class instance
+     */
+    final public static function &instance( &$library )
+    {
+        if( ! isset( static::$_instance ) )
+        {
+            $class_name = get_called_class();
+            static::$_instance = new $class_name( $library );
+        }
+
+        return static::$_instance;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Clone
+     * Singleton class doesn't allowed class object to be cloned
+     *
+     * @access  protected
+     * @final   this method can't be overwritten
+     */
+    final protected function __clone()
+    {
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Wake Up
+     * Singleton class doesn't allowed class handles and object references tobe reinstate
+     *
+     * @access  protected
+     * @final   this method can't be overwritten
+     */
+    final protected function __wakeup()
+    {
+    }
+}

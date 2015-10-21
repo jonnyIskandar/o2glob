@@ -35,7 +35,7 @@
   },
   "autoload": {
     "psr-4": {
-      "O2System\\O2Glob\\": "src"
+      "O2System\\Glob\\": "src"
     }
   }
 }

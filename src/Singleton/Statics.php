@@ -1,8 +1,8 @@
 <?php
 /**
- * O2System
+ * O2Glob
  *
- * An open source application development framework for PHP 5.4 or newer
+ * Singleton Global Class Libraries for PHP 5.4 or newer
  *
  * This content is released under the MIT License (MIT)
  *
@@ -29,86 +29,60 @@
  * @package        O2System
  * @author         Steeven Andrian Salim
  * @copyright      Copyright (c) 2005 - 2014, PT. Lingkar Kreasi (Circle Creative).
- * @license        http://circle-creative.com/products/o2system/license.html
+ * @license        http://circle-creative.com/products/o2glob/license.html
  * @license        http://opensource.org/licenses/MIT	MIT License
  * @link           http://circle-creative.com
- * @since          Version 2.0
+ * @since          Version 1.0
  * @filesource
  */
 
 // ------------------------------------------------------------------------
 
-namespace O2System\O2Glob;
-defined( 'BASEPATH' ) || exit( 'No direct script access allowed' );
+namespace O2System\Glob\Singleton;
 
 // ------------------------------------------------------------------------
 
+use O2System\Glob\Factory\Magics;
+
 /**
- * Basics Trait Class
+ * Statics Trait Class
  *
- * Use this trait class if the class allowed to be constructed and will be combined with the global super o2system
- * object (singleton)
+ * Use this class to build classes with statics methods only
+ * The classes will automatically support methods call as static or non static
+ * The classes will also has additional features when calling the classes property
  *
- * @package        O2System
- * @subpackage     core\glob
+ * @package        O2Glob
  * @category       Factory Class
- * @author         Circle Creative Dev Team
- * @link           http://o2system.center/wiki/#GlobBasics
+ * @author         Steeven Andrian Salim
+ * @link           http://o2system.center/standalone/o2glob/user-guide/statics.html
  */
-trait Basics
+trait Statics
 {
     /**
-     * Using Glob Magics Trait Class
-     *
-     * @uses \O2System\Glob\Magics
+     * Add magical methods functionality
      */
     use Magics;
 
     /**
-     * Called Class Name
+     * Class Name
      *
      * @access  protected
-     *
-     * @type    string   called class name
+     * @var     string name of called class
      */
     protected $_class_name;
 
     /**
-     * Singleton Basic Class Constructor
+     * Singleton Static Class Constructor
      *
-     * The class is still able to be constructed, but not allowed to overwrite the __construct() method
-     * If you still need a constructor create a method named __reconstruct()
+     * The class is can't be constructed
+     * If you still need a constructor create a static method named __reconstruct()
      *
-     * @access      public
+     * @access      protected
      * @final       this method can't be overwritten
-     *
-     * @property-read    static::$_reflection
-     * @property-read    static::$_instance
-     *
-     * @method  static ::_reflection()
      */
-    final public function __construct( $config = array() )
+    final protected function __construct()
     {
-        $this->_class_name = get_called_class();
-
-        // checking custom constructor
-        if( method_exists( $this, '__reconstruct' ) )
-        {
-            $this->__reconstruct( $config );
-        }
-
-        if( ! isset( static::$_reflection ) )
-        {
-            // let's the magic begin
-            static::_reflection();
-        }
-
-        if( ! isset( static::$_instance ) )
-        {
-            static::$_instance =& $this;
-        }
     }
-
     // ------------------------------------------------------------------------
 
     /**
@@ -119,18 +93,36 @@ trait Basics
      * @static      static class method
      * @final       this method can't be overwritten
      *
-     * @method  static ::instance()
+     * @method  static::_reflection()
+     * @method  static::__reconstruct()
      *
-     * @param   array   isn't really necessary unless when need a parameter
-     *                  to be parsing to __construct() method
+     * @param   array $config class config
      *
      * @return object   called class instance
      */
     final public static function &_init( $config = array() )
     {
-        return static::instance( $config );
-    }
+        // check singleton instance
+        if( ! isset( static::$_instance ) )
+        {
+            if( ! isset( static::$_reflection ) )
+            {
+                // let the magic begin
+                static::_reflection();
+            }
 
+            static::$_instance = static::$_reflection->newInstanceWithoutConstructor();
+            static::$_instance->_class_name = get_called_class();
+        }
+
+        // call __reconstruct
+        if( method_exists( static::$_instance, '__reconstruct' ) )
+        {
+            static::__reconstruct( $config );
+        }
+
+        return static::$_instance;
+    }
     // ------------------------------------------------------------------------
 
     /**
@@ -143,8 +135,7 @@ trait Basics
      *
      * @property-read   static::$_instance
      *
-     * @param   array   isn't really necessary unless when need a parameter
-     *                  to be parsing to __construct() method
+     * @param   array   $config class config
      *
      * @return  object  called class instance
      */
@@ -152,13 +143,11 @@ trait Basics
     {
         if( ! isset( static::$_instance ) )
         {
-            $class_name = get_called_class();
-            static::$_instance = new $class_name( $config );
+            static::_init( $config );
         }
 
         return static::$_instance;
     }
-
     // ------------------------------------------------------------------------
 
     /**
@@ -185,6 +174,3 @@ trait Basics
     {
     }
 }
-
-/* End of file Basics.php */
-/* Location: ./o2system/core/glob/Basics.php */

@@ -1,8 +1,8 @@
 <?php
 /**
- * O2System
+ * O2Glob
  *
- * An open source application development framework for PHP 5.4 or newer
+ * Singleton Global Class Libraries for PHP 5.4 or newer
  *
  * This content is released under the MIT License (MIT)
  *
@@ -29,33 +29,34 @@
  * @package        O2System
  * @author         Steeven Andrian Salim
  * @copyright      Copyright (c) 2005 - 2014, PT. Lingkar Kreasi (Circle Creative).
- * @license        http://circle-creative.com/products/o2system/license.html
+ * @license        http://circle-creative.com/products/o2glob/license.html
  * @license        http://opensource.org/licenses/MIT	MIT License
  * @link           http://circle-creative.com
- * @since          Version 2.0
+ * @since          Version 1.0
  * @filesource
  */
 
 // ------------------------------------------------------------------------
 
-namespace O2System\O2Glob;
-defined( 'BASEPATH' ) || exit( 'No direct script access allowed' );
+namespace O2System\Glob\Singleton;
 
 // ------------------------------------------------------------------------
 
+use O2System\Glob\Factory\Magics;
+
 /**
- * Libraries
+ * Basics Trait Class
  *
- * This class enables you to create "Driver" libraries that add runtime ability
- * to extend the capabilities of a class via additional driver objects
+ * Use this trait class if the class allowed to be constructed and will be combined with the global super o2system
+ * object (singleton)
  *
  * @package        O2System
  * @subpackage     core\glob
  * @category       Factory Class
  * @author         Circle Creative Dev Team
- * @link           http://o2system.center/wiki/#GlobLibraries
+ * @link           http://o2system.center/wiki/#GlobBasics
  */
-abstract class Libraries
+trait Basics
 {
     /**
      * Using Glob Magics Trait Class
@@ -65,68 +66,35 @@ abstract class Libraries
     use Magics;
 
     /**
-     * Called Driver Name
+     * Called Class Name
      *
      * @access  protected
      *
-     * @type    string   driver class name
+     * @type    string   called class name
      */
-    protected $_library_name;
+    protected $_class_name;
 
     /**
-     * List of library valid drivers
+     * Singleton Basic Class Constructor
      *
-     * @access  protected
+     * The class is still able to be constructed, but not allowed to overwrite the __construct() method
+     * If you still need a constructor create a method named __reconstruct()
      *
-     * @type    array   driver classes list
-     */
-    protected $_valid_drivers = array();
-
-    protected $_config = array();
-
-    /**
-     * Libraries Class Constructor
+     * @access      public
+     * @final       this method can't be overwritten
      *
-     * @access  public
+     * @property-read    static::$_reflection
+     * @property-read    static::$_instance
      *
-     * @uses    \O2System\Core\Loader::add_namespace()  registering library namespace to O2System Loader
-     *
-     * @property-write  $_library_name
-     * @property-write  static::$_instance
-     *
-     * @property-read   static::$_reflection
-     * @property-read   static::$_instance
-     *
-     * @method  static ::reflection()
+     * @method  static ::_reflection()
      */
     public function __construct()
     {
-        // Library Class
-        $this->_library_name = get_called_class();
-
-        $path = namespace_to_path( $this->_library_name );
-
-        $sub_path = str_replace( 'O2', '', get_namespace_class( $this->_library_name ) );
-        $sub_path = strtolower( $sub_path ) . DS;
-
-        $path = str_replace( '\\', DS, $path . $sub_path );
-
-        Loader::add_namespace( $this->_library_name, $path );
-        Loader::add_namespace( $this->_library_name . '\Drivers', $path . 'drivers/' );
-
-        $drivers = glob( $path . 'drivers/*.php' );
-
-        if( ! empty( $drivers ) )
-        {
-            foreach( glob( $path . 'drivers/*.php' ) as $filepath )
-            {
-                $this->_valid_drivers[ ] = strtolower( pathinfo( $filepath, PATHINFO_FILENAME ) );
-            }
-        }
+        $this->_class_name = get_called_class();
 
         if( ! isset( static::$_reflection ) )
         {
-            // let the magic begin
+            // let's the magic begin
             static::_reflection();
         }
 
@@ -135,64 +103,8 @@ abstract class Libraries
             static::$_instance =& $this;
         }
     }
+
     // ------------------------------------------------------------------------
-
-    /**
-     * Get Override
-     *
-     * The first time a child is used it won't exist, so we instantiate it
-     * subsequents calls will go straight to the proper child.
-     *
-     * @access      public
-     *
-     * @param   string $property property or driver name
-     *
-     * @return mixed    property or driver class object
-     */
-    public function __getOverride( $property )
-    {
-        if( property_exists( $this, $property ) )
-        {
-            return $this->{$property};
-        }
-        elseif( in_array( $property, $this->_valid_drivers ) )
-        {
-            // Try to load the driver
-            return $this->_load_driver( $property );
-        }
-
-        return NULL;
-    }
-    // ------------------------------------------------------------------------
-
-    /**
-     * Load driver
-     *
-     * Separate load_driver call to support explicit driver load by library or user
-     *
-     * @param   string $driver driver class name (lowercase)
-     *
-     * @return    object    Driver class
-     */
-    protected function _load_driver( $driver )
-    {
-        if( empty( $this->{$driver} ) )
-        {
-            // Driver Class
-            $class_name = $this->_library_name . '\Drivers\\' . prepare_class_name( $driver );
-
-            if( class_exists( $class_name ) )
-            {
-                // Instantiate Driver
-                $object_class = new $class_name( $this );
-
-                // Assign to Library
-                $this->{$driver} =& $object_class;
-            }
-        }
-
-        return $this->{$driver};
-    }
 
     /**
      * Init
@@ -209,7 +121,7 @@ abstract class Libraries
      *
      * @return object   called class instance
      */
-    final public static function &_init( $config = array() )
+    final public static function &initialize( $config = array() )
     {
         return static::instance( $config );
     }
@@ -245,29 +157,6 @@ abstract class Libraries
     // ------------------------------------------------------------------------
 
     /**
-     * Get Library Config Item
-     *
-     * @access  public
-     * @final   this method can't be overwritten
-     *
-     * @param string|null $item Config item index name
-     *
-     * @return array|null
-     */
-    final public function config( $item = NULL )
-    {
-        if( isset( $this->_config[ $item ] ) )
-        {
-            return $this->_config[ $item ];
-        }
-        else
-        {
-            return ! empty( $this->_config ) ? $this->_config : NULL;
-        }
-    }
-
-
-    /**
      * Clone
      * Singleton class doesn't allowed class object to be cloned
      *
@@ -291,6 +180,3 @@ abstract class Libraries
     {
     }
 }
-
-/* End of file Libraries.php */
-/* Location: ./o2system/core/glob/Libraries.php */

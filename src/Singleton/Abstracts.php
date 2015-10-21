@@ -1,8 +1,8 @@
 <?php
 /**
- * O2System
+ * O2Glob
  *
- * An open source application development framework for PHP 5.4 or newer
+ * Singleton Global Class Libraries for PHP 5.4 or newer
  *
  * This content is released under the MIT License (MIT)
  *
@@ -29,59 +29,93 @@
  * @package        O2System
  * @author         Steeven Andrian Salim
  * @copyright      Copyright (c) 2005 - 2014, PT. Lingkar Kreasi (Circle Creative).
- * @license        http://circle-creative.com/products/o2system/license.html
+ * @license        http://o2system.in/features/standalone/o2glob/license.html
  * @license        http://opensource.org/licenses/MIT	MIT License
- * @link           http://circle-creative.com
- * @since          Version 2.0
+ * @link           http://o2system.in
+ * @since          Version 1.0
  * @filesource
  */
 
 // ------------------------------------------------------------------------
 
-namespace O2System\O2Glob;
-defined( 'BASEPATH' ) || exit( 'No direct script access allowed' );
+namespace O2System\Glob\Singleton;
 
 // ------------------------------------------------------------------------
 
+use O2System\Glob\Factory\Magics;
+
 /**
- * Statics Trait Class
+ * Abstracts Trait Class
  *
- * Use this class to build classes with statics methods only
- * The classes will automatically support methods call as static or non static
- * The classes will also has additional features when calling the classes property
+ * Use this trait class to get a glob magic methods, if the class has custom constructor method
  *
- * @package        O2Glob
- * @category       Factory Class
- * @author         Steeven Andrian Salim
- * @link           http://o2system.center/standalone/o2glob/user-guide/statics.html
+ * @package        o2glob
+ * @category       Core Class
+ * @author         Circle Creative Dev Team
+ * @link           http://o2system.in/features/standalone/o2glob/user-guide/abstracts.html
  */
-trait Statics
+abstract class Abstracts
 {
     /**
-     * Add magical methods functionality
+     * Using Glob Magics Trait Class
+     *
+     * @uses \O2System\Glob\Magics
      */
     use Magics;
 
     /**
-     * Class Name
+     * Called Class Name
      *
      * @access  protected
-     * @var     string name of called class
+     *
+     * @type    string   called class name
      */
     protected $_class_name;
 
     /**
-     * Singleton Static Class Constructor
+     * Abstracts Glob is allowed you to set your own constructor first
+     * it's the opposite of Basics and Statics
      *
-     * The class is can't be constructed
-     * If you still need a constructor create a static method named __reconstruct()
+     * Important: you must call __reconstruct function at your __construct function
+     * if you're not call the __reconstruct function then the glob magics will failed
+     *
+     * @access  public
+     */
+    public function __construct( $config = array() )
+    {
+        $this->__reconstruct();
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Reconstruct
+     * This method is used for initialized Glob Magic Methods
      *
      * @access      protected
      * @final       this method can't be overwritten
+     *
+     * @property    static::$_reflection
+     *              static::$_instance
+     *
+     * @method      static ::_reflection()
      */
-    final protected function __construct()
+    final protected function __reconstruct()
     {
+        $this->_class_name = get_called_class();
+
+        if( ! isset( static::$_reflection ) )
+        {
+            // let's the magic begin
+            static::_reflection();
+        }
+
+        if( ! isset( static::$_instance ) )
+        {
+            static::$_instance =& $this;
+        }
     }
+
     // ------------------------------------------------------------------------
 
     /**
@@ -92,36 +126,18 @@ trait Statics
      * @static      static class method
      * @final       this method can't be overwritten
      *
-     * @method  static::_reflection()
-     * @method  static::__reconstruct()
+     * @method  static ::instance()
      *
-     * @param   array $config class config
+     * @param   array   isn't really necessary unless when need a parameter
+     *                  to be parsing to __construct() method
      *
      * @return object   called class instance
      */
     final public static function &_init( $config = array() )
     {
-        // check singleton instance
-        if( ! isset( static::$_instance ) )
-        {
-            if( ! isset( static::$_reflection ) )
-            {
-                // let the magic begin
-                static::_reflection();
-            }
-
-            static::$_instance = static::$_reflection->newInstanceWithoutConstructor();
-            static::$_instance->_class_name = get_called_class();
-        }
-
-        // call __reconstruct
-        if( method_exists( static::$_instance, '__reconstruct' ) )
-        {
-            static::__reconstruct( $config );
-        }
-
-        return static::$_instance;
+        return static::instance( $config );
     }
+
     // ------------------------------------------------------------------------
 
     /**
@@ -132,9 +148,10 @@ trait Statics
      * @static      static class method
      * @final       this method can't be overwritten
      *
-     * @property-read   static::$_instance
+     * @property    static::$_instance
      *
-     * @param   array   $config class config
+     * @param   array   isn't really necessary unless when need a parameter
+     *                  to be parsing to __construct() method
      *
      * @return  object  called class instance
      */
@@ -142,37 +159,10 @@ trait Statics
     {
         if( ! isset( static::$_instance ) )
         {
-            static::_init( $config );
+            $class_name = get_called_class();
+            static::$_instance = new $class_name( $config );
         }
 
         return static::$_instance;
     }
-    // ------------------------------------------------------------------------
-
-    /**
-     * Clone
-     * Singleton class doesn't allowed class object to be cloned
-     *
-     * @access  protected
-     * @final   this method can't be overwritten
-     */
-    final protected function __clone()
-    {
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Wake Up
-     * Singleton class doesn't allowed class handles and object references tobe reinstate
-     *
-     * @access  protected
-     * @final   this method can't be overwritten
-     */
-    final protected function __wakeup()
-    {
-    }
 }
-
-/* End of file Statics.php */
-/* Location: ./o2system/core/glob/Statics.php */
