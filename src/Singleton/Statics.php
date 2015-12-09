@@ -38,11 +38,7 @@
 
 // ------------------------------------------------------------------------
 
-<<<<<<< HEAD:src/Singleton/Statics.php
 namespace O2System\Glob\Singleton;
-=======
-namespace O2System\O2Glob;
->>>>>>> origin/master:src/Statics.php
 
 // ------------------------------------------------------------------------
 
@@ -66,14 +62,6 @@ trait Statics
      * Add magical methods functionality
      */
     use Magics;
-
-    /**
-     * Class Name
-     *
-     * @access  protected
-     * @var     string name of called class
-     */
-    protected $_class_name;
 
     /**
      * Singleton Static Class Constructor
@@ -104,28 +92,30 @@ trait Statics
      *
      * @return object   called class instance
      */
-    final public static function &_init( $config = array() )
+    final public static function &initialize()
     {
+        $params = func_get_args();
+
         // check singleton instance
-        if( ! isset( static::$_instance ) )
+        if( ! isset( self::$_instance ) )
         {
-            if( ! isset( static::$_reflection ) )
+            if( ! isset( self::$_reflection ) )
             {
                 // let the magic begin
-                static::_reflection();
+                self::_reflection();
             }
 
-            static::$_instance = static::$_reflection->newInstanceWithoutConstructor();
-            static::$_instance->_class_name = get_called_class();
+            self::$_instance = self::$_reflection->newInstanceWithoutConstructor();
+            self::$_instance->_class_name = get_called_class();
         }
 
         // call __reconstruct
-        if( method_exists( static::$_instance, '__reconstruct' ) )
+        if( method_exists( self::$_instance, '__reconstruct' ) )
         {
-            static::__reconstruct( $config );
+            call_user_func('self::__reconstruct', $params);
         }
 
-        return static::$_instance;
+        return self::$_instance;
     }
     // ------------------------------------------------------------------------
 
@@ -143,14 +133,16 @@ trait Statics
      *
      * @return  object  called class instance
      */
-    final public static function &instance( $config = array() )
+    final public static function &instance()
     {
-        if( ! isset( static::$_instance ) )
+        $params = func_get_args();
+
+        if( ! isset( self::$_instance ) )
         {
-            static::_init( $config );
+            call_user_func('self::initialize', $params);
         }
 
-        return static::$_instance;
+        return self::$_instance;
     }
     // ------------------------------------------------------------------------
 

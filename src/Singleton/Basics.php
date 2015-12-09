@@ -38,11 +38,7 @@
 
 // ------------------------------------------------------------------------
 
-<<<<<<< HEAD:src/Singleton/Basics.php
 namespace O2System\Glob\Singleton;
-=======
-namespace O2System\O2Glob;
->>>>>>> origin/master:src/Basics.php
 
 // ------------------------------------------------------------------------
 
@@ -70,15 +66,6 @@ trait Basics
     use Magics;
 
     /**
-     * Called Class Name
-     *
-     * @access  protected
-     *
-     * @type    string   called class name
-     */
-    protected $_class_name;
-
-    /**
      * Singleton Basic Class Constructor
      *
      * The class is still able to be constructed, but not allowed to overwrite the __construct() method
@@ -92,19 +79,25 @@ trait Basics
      *
      * @method  static ::_reflection()
      */
-    public function __construct()
+    final public function __construct()
     {
-        $this->_class_name = get_called_class();
+        $params = func_get_args();
 
-        if( ! isset( static::$_reflection ) )
+        if( ! isset( self::$_reflection ) )
         {
             // let's the magic begin
-            static::_reflection();
+            self::_reflection();
         }
 
-        if( ! isset( static::$_instance ) )
+        if( ! isset( self::$_instance ) )
         {
-            static::$_instance =& $this;
+            self::$_instance =& $this;
+        }
+
+        // Reconstruct Class
+        if(method_exists($this, '__reconstruct'))
+        {
+            call_user_func_array(array($this, '__reconstruct'), $params);
         }
     }
 
@@ -125,9 +118,9 @@ trait Basics
      *
      * @return object   called class instance
      */
-    final public static function &initialize( $config = array() )
+    final public static function &initialize()
     {
-        return static::instance( $config );
+        return self::instance( func_get_args() );
     }
 
     // ------------------------------------------------------------------------
@@ -147,15 +140,23 @@ trait Basics
      *
      * @return  object  called class instance
      */
-    final public static function &instance( $config = array() )
+    final public static function &instance()
     {
-        if( ! isset( static::$_instance ) )
+        $params = func_get_args();
+
+        if( ! isset( self::$_instance ) )
         {
             $class_name = get_called_class();
-            static::$_instance = new $class_name( $config );
+            self::$_instance = new $class_name();
+
+            // Reconstruct Class
+            if(method_exists(self::$_instance, '__reconstruct'))
+            {
+                call_user_func_array(array(self::$_instance, '__reconstruct'), $params);
+            }
         }
 
-        return static::$_instance;
+        return self::$_instance;
     }
 
     // ------------------------------------------------------------------------

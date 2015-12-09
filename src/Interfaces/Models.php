@@ -38,21 +38,17 @@
 
 // ------------------------------------------------------------------------
 
-<<<<<<< HEAD:src/Interfaces/Models.php
 namespace O2System\Glob\Interfaces;
-=======
-namespace O2System\O2Glob;
->>>>>>> origin/master:src/Libraries.php
 
 // ------------------------------------------------------------------------
 
 use O2System\Glob\Factory\Magics;
 
 /**
- * Libraries
+ * Models
  *
- * This class enables you to create "Driver" libraries that add runtime ability
- * to extend the capabilities of a class via additional driver objects
+ * This class enables you to create "sub_model" libraries that add runtime ability
+ * to extend the capabilities of a class via additional sub_model objects
  *
  * @package        O2System
  * @subpackage     core\glob
@@ -70,77 +66,49 @@ abstract class Models
     use Magics;
 
     /**
-     * Called Driver Name
+     * Called sub_model Name
      *
      * @access  protected
      *
-     * @type    string   driver class name
+     * @type    string   sub_model class name
      */
     protected $_model_name = NULL;
 
     /**
-     * List of library valid drivers
+     * List of valid sub models
      *
      * @access  protected
      *
-     * @type    array   driver classes list
+     * @type    array   sub_model classes list
      */
-    protected $_valid_drivers = array();
+    protected $_valid_sub_models = array();
 
     /**
-     * Libraries Class Constructor
+     * Model Class Constructor
      *
      * @access  public
-     *
-     * @uses    \O2System\Core\Loader::add_namespace()  registering library namespace to O2System Loader
-     *
-     * @property-write  $_library_name
-     * @property-write  static::$_instance
-     *
-     * @property-read   static::$_reflection
-     * @property-read   static::$_instance
      *
      * @method  static ::reflection()
      */
     public function __construct()
     {
-        // Library Class
-<<<<<<< HEAD:src/Interfaces/Models.php
+        // Model Class
         $this->_model_name = get_called_class();
 
         // let the magic begin
         static::_reflection();
 
-        foreach( glob( $this->_get_drivers_path() . '*.php' ) as $filepath )
+        foreach( glob( $this->_get_sub_models_path() . '*.php' ) as $filepath )
         {
-            $this->_valid_drivers[ strtolower( pathinfo( $filepath, PATHINFO_FILENAME ) ) ] = $filepath;
+            $this->_valid_sub_models[ strtolower( pathinfo( $filepath, PATHINFO_FILENAME ) ) ] = $filepath;
         }
 
         // set class instance
         static::$_instance =& $this;
-=======
-        $this->_library_name = get_called_class();
-
-        if( ! isset( static::$_reflection ) )
-        {
-            // let the magic begin
-            static::_reflection();
-        }
-
-        foreach( glob( $this->_get_drivers_path() . '*.php' ) as $filepath )
-        {
-            $this->_valid_drivers[ strtolower( pathinfo( $filepath, PATHINFO_FILENAME ) ) ] = $filepath;
-        }
-
-        if( ! isset( static::$_instance ) )
-        {
-            static::$_instance =& $this;
-        }
->>>>>>> origin/master:src/Libraries.php
     }
     // ------------------------------------------------------------------------
 
-    final protected function _get_drivers_path()
+    final protected function _get_sub_models_path()
     {
         $class_realpath = static::$_reflection->getFileName();
         return dirname($class_realpath) . '/' . strtolower( pathinfo($class_realpath, PATHINFO_FILENAME) ) . '/';
@@ -154,9 +122,9 @@ abstract class Models
      *
      * @access      public
      *
-     * @param   string $property property or driver name
+     * @param   string $property property or sub_model name
      *
-     * @return mixed    property or driver class object
+     * @return mixed    property or sub_model class object
      */
     public function &__getOverride( $property )
     {
@@ -164,10 +132,10 @@ abstract class Models
         {
             return $this->{$property};
         }
-        elseif( array_key_exists( $property, $this->_valid_drivers ) )
+        elseif( array_key_exists( $property, $this->_valid_sub_models ) )
         {
-            // Try to load the driver
-            return $this->_load_driver( $property );
+            // Try to load the sub_model
+            return $this->_load_sub_model( $property );
         }
 
         // Dummy property for avoiding error
@@ -178,7 +146,7 @@ abstract class Models
 
     // ------------------------------------------------------------------------
 
-    final protected function _get_drivers_path()
+    final protected function _get_sub_models_path()
     {
         $class_realpath = static::$_reflection->getFileName();
 
@@ -186,53 +154,41 @@ abstract class Models
     }
 
     /**
-     * Load driver
+     * Load sub_model
      *
-     * Separate load_driver call to support explicit driver load by library or user
+     * Separate load_sub_model call to support explicit sub_model load by library or user
      *
-     * @param   string $driver driver class name (lowercase)
+     * @param   string $sub_model sub_model class name (lowercase)
      *
-     * @return    object    Driver class
+     * @return    object    sub_model class
      */
-    protected function _load_driver( $driver )
+    protected function _load_sub_model( $sub_model )
     {
-        if( file_exists( $this->_valid_drivers[ $driver ] ) )
+        if( file_exists( $this->_valid_sub_models[ $sub_model ] ) )
         {
-<<<<<<< HEAD:src/Interfaces/Models.php
-            require_once( $this->_valid_drivers[ $driver ] );
+            require_once( $this->_valid_sub_models[ $sub_model ] );
 
             if( strpos( $this->_model_name, '\\' ) !== FALSE )
             {
-                $class_name = '\\' . $this->_model_name . '\\' . ucfirst( $driver );
+                $class_name = '\\' . $this->_model_name . '\\' . ucfirst( $sub_model );
             }
             else
             {
-                $class_name = ucfirst( $driver ) . '_Model';
+                $class_name = ucfirst( $sub_model ) . '_Model';
             }
 
             if( class_exists( $class_name ) )
             {
-                $this->{$driver} = new $class_name();
+                $this->{$sub_model} = new $class_name();
 
                 if( isset( $this->db ) )
                 {
-                    $this->{$driver}->db = $this->db;
-=======
-            if(file_exists($filepath = $this->_valid_drivers[$driver]))
-            {
-                require_once($filepath);
-
-                $class_name = get_called_class() . '\\Drivers\\' . ucfirst($driver);
-
-                if(class_exists($class_name, FALSE))
-                {
-                    $this->{$driver} = new $class_name();
->>>>>>> origin/master:src/Libraries.php
+                    $this->{$sub_model}->db = $this->db;
                 }
             }
         }
 
-        return $this->{$driver};
+        return $this->{$sub_model};
     }
 
     /**
@@ -250,7 +206,7 @@ abstract class Models
      *
      * @return object   called class instance
      */
-    final public static function &_init( $config = array() )
+    final public static function &initialize( $config = array() )
     {
         return static::instance( $config );
     }
@@ -259,25 +215,20 @@ abstract class Models
 
     /**
      * Instance
+     *
      * Instance class caller
      *
      * @access      public
      * @static      static class method
      * @final       this method can't be overwritten
-     *
-     * @property-read   static::$_instance
-     *
-     * @param   array   isn't really necessary unless when need a parameter
-     *                  to be parsing to __construct() method
-     *
      * @return  object  called class instance
      */
-    final public static function &instance( $config = array() )
+    final public static function &instance()
     {
         if( ! isset( static::$_instance ) )
         {
             $class_name = get_called_class();
-            static::$_instance = new $class_name( $config );
+            static::$_instance = new $class_name();
         }
 
         return static::$_instance;
@@ -288,12 +239,12 @@ abstract class Models
     /**
      * Get Library Config Item
      *
-     * @access  public
-     * @final   this method can't be overwritten
-     *
      * @param string|null $item Config item index name
      *
      * @return array|null
+     *
+     * @access  public
+     * @final   this method can't be overwritten
      */
     final public function config( $item = NULL )
     {

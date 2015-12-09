@@ -35,6 +35,9 @@
   "autoload": {
     "psr-4": {
       "O2System\\Glob\\": "src"
-    }
+    },
+    "files": [
+      "src/Glob.php"
+    ]
   }
 }

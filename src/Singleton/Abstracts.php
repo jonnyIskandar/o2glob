@@ -35,17 +35,10 @@
  * @since          Version 1.0
  * @filesource
  */
-
 // ------------------------------------------------------------------------
-
-<<<<<<< HEAD:src/Singleton/Abstracts.php
 namespace O2System\Glob\Singleton;
-=======
-namespace O2System\O2Glob;
->>>>>>> origin/master:src/Abstracts.php
 
 // ------------------------------------------------------------------------
-
 use O2System\Glob\Factory\Magics;
 
 /**
@@ -58,115 +51,121 @@ use O2System\Glob\Factory\Magics;
  * @author         Circle Creative Dev Team
  * @link           http://o2system.in/features/standalone/o2glob/user-guide/abstracts.html
  */
-abstract class Abstracts
+trait Abstracts
 {
-    /**
-     * Using Glob Magics Trait Class
-     *
-     * @uses \O2System\Glob\Magics
-     */
-    use Magics;
+	/**
+	 * Using Glob Magics Trait Class
+	 *
+	 * @uses \O2System\Glob\Magics
+	 */
+	use Magics;
 
-    /**
-     * Called Class Name
-     *
-     * @access  protected
-     *
-     * @type    string   called class name
-     */
-    protected $_class_name;
+	/**
+	 * Abstracts Glob is allowed you to set your own constructor first
+	 * it's the opposite of Basics and Statics
+	 *
+	 * Important: you must call __reconstruct function at your __construct function
+	 * if you're not call the __reconstruct function then the glob magics will failed
+	 *
+	 * @access  public
+	 */
+	public function __construct()
+	{
+		$this->__reconstruct();
+	}
+	// ------------------------------------------------------------------------
+	/**
+	 * Reconstruct
+	 * This method is used for initialized Glob Magic Methods
+	 *
+	 * @access      protected
+	 * @final       this method can't be overwritten
+	 *
+	 * @property    static::$_reflection
+	 *              static::$_instance
+	 *
+	 * @method      static ::_reflection()
+	 */
+	final protected function __reconstruct()
+	{
+		if ( ! isset( self::$_reflection ) )
+		{
+			// let's the magic begin
+			static::_reflection();
+		}
+		if ( ! isset( self::$_instance ) )
+		{
+			static::$_instance =& $this;
+		}
+	}
+	// ------------------------------------------------------------------------
+	/**
+	 * Init
+	 * This method is used for initialized called class instance
+	 *
+	 * @access      public
+	 * @static      static class method
+	 * @final       this method can't be overwritten
+	 *
+	 * @method  static ::instance()
+	 *
+	 * @param   array   isn't really necessary unless when need a parameter
+	 *                  to be parsing to __construct() method
+	 *
+	 * @return object   called class instance
+	 */
+	final public static function &initialize( $config = array() )
+	{
+		return self::instance( $config );
+	}
+	// ------------------------------------------------------------------------
+	/**
+	 * Instance
+	 * Instance class caller
+	 *
+	 * @access      public
+	 * @static      static class method
+	 * @final       this method can't be overwritten
+	 *
+	 * @property    static::$_instance
+	 *
+	 * @param   array   isn't really necessary unless when need a parameter
+	 *                  to be parsing to __construct() method
+	 *
+	 * @return  object  called class instance
+	 */
+	final public static function &instance( $config = array() )
+	{
+		if ( ! isset( self::$_instance ) )
+		{
+			$class_name = get_called_class();
+			self::$_instance = new $class_name( $config );
+		}
 
-    /**
-     * Abstracts Glob is allowed you to set your own constructor first
-     * it's the opposite of Basics and Statics
-     *
-     * Important: you must call __reconstruct function at your __construct function
-     * if you're not call the __reconstruct function then the glob magics will failed
-     *
-     * @access  public
-     */
-    public function __construct( $config = array() )
-    {
-        $this->__reconstruct();
-    }
+		return self::$_instance;
+	}
 
-    // ------------------------------------------------------------------------
+	/**
+	 * Clone
+	 * Singleton class doesn't allowed class object to be cloned
+	 *
+	 * @access  protected
+	 * @final   this method can't be overwritten
+	 */
+	final protected function __clone()
+	{
+	}
 
-    /**
-     * Reconstruct
-     * This method is used for initialized Glob Magic Methods
-     *
-     * @access      protected
-     * @final       this method can't be overwritten
-     *
-     * @property    static::$_reflection
-     *              static::$_instance
-     *
-     * @method      static ::_reflection()
-     */
-    final protected function __reconstruct()
-    {
-        $this->_class_name = get_called_class();
+	// ------------------------------------------------------------------------
 
-        if( ! isset( static::$_reflection ) )
-        {
-            // let's the magic begin
-            static::_reflection();
-        }
-
-        if( ! isset( static::$_instance ) )
-        {
-            static::$_instance =& $this;
-        }
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Init
-     * This method is used for initialized called class instance
-     *
-     * @access      public
-     * @static      static class method
-     * @final       this method can't be overwritten
-     *
-     * @method  static ::instance()
-     *
-     * @param   array   isn't really necessary unless when need a parameter
-     *                  to be parsing to __construct() method
-     *
-     * @return object   called class instance
-     */
-    final public static function &_init( $config = array() )
-    {
-        return static::instance( $config );
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Instance
-     * Instance class caller
-     *
-     * @access      public
-     * @static      static class method
-     * @final       this method can't be overwritten
-     *
-     * @property    static::$_instance
-     *
-     * @param   array   isn't really necessary unless when need a parameter
-     *                  to be parsing to __construct() method
-     *
-     * @return  object  called class instance
-     */
-    final public static function &instance( $config = array() )
-    {
-        if( ! isset( static::$_instance ) )
-        {
-            $class_name = get_called_class();
-            static::$_instance = new $class_name( $config );
-        }
-
-        return static::$_instance;
-    }
+	/**
+	 * Wake Up
+	 * Singleton class doesn't allowed class handles and object references tobe reinstate
+	 *
+	 * @access  protected
+	 * @final   this method can't be overwritten
+	 */
+	final protected function __wakeup()
+	{
+	}
 }

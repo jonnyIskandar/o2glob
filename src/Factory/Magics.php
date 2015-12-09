@@ -38,13 +38,11 @@
 
 // ------------------------------------------------------------------------
 
-<<<<<<< HEAD:src/Factory/Magics.php
 namespace O2System\Glob\Factory;
-=======
-namespace O2System\O2Glob;
->>>>>>> origin/master:src/Magics.php
 
 // ------------------------------------------------------------------------
+
+use O2System\Glob\Helpers\Inflector;
 
 /**
  * Magics Trait Class
@@ -59,426 +57,497 @@ namespace O2System\O2Glob;
  */
 trait Magics
 {
-    /**
-     * Reflection of Called Class
-     *
-     * @access  protected
-     * @static
-     *
-     * @type    object  reflection object class of called class
-     */
-    protected static $_reflection;
+	/**
+	 * Reflection of Called Class
+	 *
+	 * @access  protected
+	 * @static
+	 *
+	 * @type    object  reflection object class of called class
+	 */
+	protected static $_reflection;
 
-    /**
-     * Instance of Called Class
-     *
-     * @access  protected
-     * @static
-     *
-     * @type     object object of called class
-     */
-    protected static $_instance;
+	/**
+	 * Instance of Called Class
+	 *
+	 * @access  protected
+	 * @static
+	 *
+	 * @type     object object of called class
+	 */
+	protected static $_instance;
 
-    /**
-     * Storage Property of Called Class
-     *
-     * @access  protected
-     * @static
-     *
-     * @type    object|array    property storage of called class
-     */
-    protected static $_storage;
+	/**
+	 * Registry Property of Called Class
+	 *
+	 * @access  protected
+	 * @static
+	 *
+	 * @type    object|array    property registry of called class
+	 */
+	protected static $_registry;
 
-    /**
-     * List of Called Class Methods
-     *
-     * @access  protected
-     * @static
-     *
-     * @type     array
-     */
-    protected static $_methods;
+	/**
+	 * List of Public Called Class Methods
+	 *
+	 * @access  protected
+	 * @static
+	 *
+	 * @type     array
+	 */
+	protected static $_methods;
+	
+	/**
+	 * List of Public Called Class Methods Maps
+	 *
+	 * @access  protected
+	 * @static
+	 *
+	 * @type     array
+	 */
+	protected static $_methods_maps = array(
+		'load' => 'loader',
+	);
 
-    /**
-     * List of Called Class Properties
-     *
-     * @access  protected
-     * @static
-     *
-     * @type     array
-     */
-    protected static $_properties;
+	/**
+	 * List of Public Called Class Properties
+	 *
+	 * @access  protected
+	 * @static
+	 *
+	 * @type     array
+	 */
+	protected static $_properties;
+	
+	/**
+	 * List of Public Called Class Properties
+	 *
+	 * @access  protected
+	 * @static
+	 *
+	 * @type     array
+	 */
+	protected static $_properties_maps = array(
+		'registry' => '_registry',
+		'load' => 'loader'
+	);
 
-    /**
-     * Reflection
-     * This method is used to reflect the called class
-     *
-     * @access   protected
-     * @final    this method can't be overwritten
-     *
-     * @uses     \ReflectionClass()
-     * @uses     \ReflectionMethod()
-     * @uses     \ReflectionProperty()
-     *
-     * @used_by  all \O2System\Glob Classes
-     *
-     * @property-write  array   $_methods
-     * @property-write  array   $_properties
-     */
-    final protected static function _reflection()
-    {
-        static::$_reflection = new \ReflectionClass( get_called_class() );
+	/**
+	 * Reflection
+	 * This method is used to reflect the called class
+	 *
+	 * @access   protected
+	 * @final    this method can't be overwritten
+	 *
+	 * @uses     \ReflectionClass()
+	 * @uses     \ReflectionMethod()
+	 * @uses     \ReflectionProperty()
+	 *
+	 * @used_by  all \O2System\Glob Classes
+	 *
+	 * @property-write  array $_methods
+	 * @property-write  array $_properties
+	 */
+	final protected static function _reflection( $called_class = NULL )
+	{
+		$called_class = isset( $called_class ) ? $called_class : get_called_class();
 
-        $methods = array(
-            'public'    => \ReflectionMethod::IS_PUBLIC,
-            'protected' => \ReflectionMethod::IS_PROTECTED,
-            'private'   => \ReflectionMethod::IS_PRIVATE,
-            'static'    => \ReflectionMethod::IS_STATIC
-        );
+		self::$_reflection = new \ReflectionClass( $called_class );
 
-        foreach( $methods as $method => $reflect )
-        {
-            $reflection = static::$_reflection->getMethods( $reflect );
+		$methods = array(
+			'public'    => \ReflectionMethod::IS_PUBLIC,
+			'protected' => \ReflectionMethod::IS_PROTECTED,
+			'private'   => \ReflectionMethod::IS_PRIVATE,
+			'static'    => \ReflectionMethod::IS_STATIC,
+		);
 
-            if( ! empty( $reflection ) )
-            {
-                foreach( $reflection as $object )
-                {
-                    static::$_methods[ $method ][ ] = $object->name;
-                }
-            }
-        }
+		foreach ( $methods as $method => $reflect )
+		{
+			$reflection = self::$_reflection->getMethods( $reflect );
 
-        $properties = array(
-            'public'    => \ReflectionProperty::IS_PUBLIC,
-            'protected' => \ReflectionProperty::IS_PROTECTED,
-            'private'   => \ReflectionProperty::IS_PRIVATE,
-            'static'    => \ReflectionProperty::IS_STATIC
-        );
+			if ( ! empty( $reflection ) )
+			{
+				foreach ( $reflection as $object )
+				{
+					self::$_methods[ $method ][] = $object->name;
+				}
+			}
+		}
 
-        foreach( $properties as $property => $reflect )
-        {
-            $reflection = static::$_reflection->getProperties( $reflect );
+		$properties = array(
+			'public'    => \ReflectionProperty::IS_PUBLIC,
+			'protected' => \ReflectionProperty::IS_PROTECTED,
+			'private'   => \ReflectionProperty::IS_PRIVATE,
+			'static'    => \ReflectionProperty::IS_STATIC,
+		);
 
-            if( ! empty( $reflection ) )
-            {
-                foreach( $reflection as $object )
-                {
-                    static::$_properties[ $property ][ ] = $object->name;
-                }
-            }
-        }
-    }
+		foreach ( $properties as $property => $reflect )
+		{
+			$reflection = self::$_reflection->getProperties( $reflect );
 
-    // ------------------------------------------------------------------------
+			if ( ! empty( $reflection ) )
+			{
+				foreach ( $reflection as $object )
+				{
+					self::$_properties[ $property ][] = $object->name;
+				}
+			}
+		}
+	}
 
-    /**
-     * Set Magic Method
-     * Magic method to write called class properties
-     *
-     * @access      public
-     * @final       this method can't be overwritten
-     *
-     * @param   string $name  property name
-     * @param   mixed  $value property value
-     */
-    final public function __set( $name, $value )
-    {
-        if( method_exists( $this, '__setOverride' ) )
-        {
-            $this->__setOverride( $name, $value );
-        }
-        else
-        {
-            $this->{$name} = $value;
-        }
-    }
+	// ------------------------------------------------------------------------
 
-    // ------------------------------------------------------------------------
+	/**
+	 * Set Magic Method
+	 * Magic method to write called class properties
+	 *
+	 * @access      public
+	 * @final       this method can't be overwritten
+	 *
+	 * @param   string $name  property name
+	 * @param   mixed  $value property value
+	 */
+	final public function __set( $name, $value )
+	{
+		if ( method_exists( $this, '__setOverride' ) )
+		{
+			$this->__setOverride( $name, $value );
+		}
+		else
+		{
+			$this->{$name} = $value;
+		}
+	}
 
-    /**
-     * Set Storage
-     * This method is used for write called class storage properties
-     *
-     * @access      public
-     * @final       this method can't be overwritten
-     *
-     * @param string $name  storage property name
-     * @param mixed  $value storage property value
-     */
-    final public function __setStorage( $name, $value )
-    {
-        static::$_storage[ $name ] = $value;
-    }
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Set Method Map
+	 * Set method index map
+	 *
+	 * @access      public
+	 * @final       this method can't be overwritten
+	 *
+	 * @param   string $name  Origin map index name
+	 * @param   mixed  $map   New map index name
+	 */
+	final public function __set_method_map( $name, $map )
+	{
+		self::$_methods_maps[ $name ] = $map;
+	}
 
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * Set Property Map
+	 * Set property index map
+	 *
+	 * @access      public
+	 * @final       this method can't be overwritten
+	 *
+	 * @param   string $name  Origin map index name
+	 * @param   mixed  $map   New map index name
+	 */
+	final public function __set_property_map( $name, $map )
+	{
+		self::$_property_maps[ $name ] = $map;
+	}
 
-    /**
-     * Get
-     * Magic method used as called class property getter
-     *
-     * @access      public
-     * @static      static class method
-     *
-     * @param   string $property property name
-     *
-     * @return mixed
-     */
-    final public function &__get( $property )
-    {
-        if( isset( static::$_properties[ 'static' ] ) && in_array( $property, static::$_properties[ 'static' ] ) )
-        {
-            return static::${$property};
-        }
-        elseif( isset( static::$_properties[ 'public' ] ) && in_array( $property, static::$_properties[ 'public' ] ) )
-        {
-            return $this->{$property};
-        }
-        elseif( $property === 'storage' )
-        {
-            return static::$_storage;
-        }
-        elseif( isset( static::$_storage[ $property ] ) )
-        {
-            return static::$_storage[ $property ];
-        }
-        elseif( method_exists( $this, '__getOverride' ) )
-        {
-            return $this->__getOverride( $property );
-        }
+	// ------------------------------------------------------------------------
 
-        // Dummy property for avoiding error
-        $dummy_property = NULL;
+	/**
+	 * Set registry
+	 * This method is used for write called class registry properties
+	 *
+	 * @access      public
+	 * @final       this method can't be overwritten
+	 *
+	 * @param string $name  registry property name
+	 * @param mixed  $value registry property value
+	 */
+	final public function __set_registry( $name, $value )
+	{
+		self::$_registry[ $name ] = $value;
+	}
 
-        return $dummy_property;
-    }
+	// ------------------------------------------------------------------------
 
-    // ------------------------------------------------------------------------
+	/**
+	 * Get
+	 * Magic method used as called class property getter
+	 *
+	 * @access      public
+	 * @static      static class method
+	 *
+	 * @param   string $property property name
+	 *
+	 * @return mixed
+	 */
+	final public function &__get( $property )
+	{
+		$property = strtolower( $property );
+		$property = isset( self::$_properties_maps[ $property ] ) ? self::$_properties_maps[ $property ] : $property;
+		
+		$prop[0] = NULL;
+		
+		if ( property_exists( $this, $property ) )
+		{
+			if( isset( $this->{$property} ) )
+			{
+				$prop[0] = $this->{$property};
+			}
+			elseif ( isset( self::${$property} ) )
+			{
+				$prop[0] = self::${$property};
+			}
+		}
+		elseif ( isset( self::$_properties[ 'public' ] ) AND
+			in_array( $property, self::$_properties[ 'public' ] )
+		)
+		{
+			$prop[0] = $this->{$property};
+		}
+		elseif ( isset( self::$_registry[ $property ] ) )
+		{
+			$prop[0] = self::$_registry[ $property ];
+		}
+		elseif ( method_exists( $this, '__getOverride' ) )
+		{
+			$prop[0] = $this->__getOverride( $property );
+		}
 
-    /**
-     * Get Property
-     * Magic method used as called class property getter with custom returning value conversion
-     *
-     * @access    private
-     * @final     this method can't be overwritten
-     *
-     * @method    static ::$_instance->__get()
-     *
-     * @param   $property   string of property name
-     * @param   $args       array of parameters
-     *
-     * @return mixed
-     */
-    final static private function __getProperty( $property, $args = array() )
-    {
-        if( empty( $args ) )
-        {
-            return static::$_instance->__get( $property );
-        }
-        else
-        {
-            $entry = static::$_instance->__get( $property );
-            @list( $index, $action, $params ) = $args;
+		return $prop[0];
+	}
 
-            // if the entry is string nothing else to be proceed
-            if( is_string( $entry ) ) return $entry;
+	// ------------------------------------------------------------------------
 
-            if( is_array( $entry ) )
-            {
-                $data = $entry;
+	/**
+	 * Get Property
+	 * Magic method used as called class property getter with custom returning value conversion
+	 *
+	 * @access    private
+	 * @final     this method can't be overwritten
+	 *
+	 * @method    static ::$_instance->__get()
+	 *
+	 * @param   $property   string of property name
+	 * @param   $args       array of parameters
+	 *
+	 * @return mixed
+	 */
+	final static private function __getProperty( $property, $args = array() )
+	{
+		if ( empty( $args ) )
+		{
+			return self::$_instance->__get( $property );
+		}
+		else
+		{
+			$entry = self::$_instance->__get( $property );
+			@list( $index, $action, $params ) = $args;
 
-                if( isset( $entry[ $index ] ) )
-                {
-                    $data = $entry[ $index ];
-                }
-                else
-                {
-                    @list( $action, $params ) = $args;
-                }
-            }
-            elseif( is_object( $entry ) )
-            {
-                $data = $entry;
+			// if the entry is string nothing else to be proceed
+			if ( is_string( $entry ) ) return $entry;
 
-                if( isset( $entry->{$index} ) )
-                {
-                    $data = $entry->{$index};
-                }
-                else
-                {
-                    @list( $action, $params ) = $args;
-                }
-            }
+			if ( is_array( $entry ) )
+			{
+				$data = $entry;
 
-            // if the data is string or there is no action nothing to be proceed
-            if( is_string( $data ) || empty( $action ) ) return $data;
+				if ( isset( $entry[ $index ] ) )
+				{
+					$data = $entry[ $index ];
+				}
+				else
+				{
+					@list( $action, $params ) = $args;
+				}
+			}
+			elseif ( is_object( $entry ) )
+			{
+				$data = $entry;
 
-            if( in_array( $action, array( 'array', 'object', 'keys' ) ) )
-            {
-                switch( $action )
-                {
-                    default:
-                    case 'object';
-                        if( is_array( $data ) )
-                        {
-                            return (object)$data;
-                        }
+				if ( isset( $entry->{$index} ) )
+				{
+					$data = $entry->{$index};
+				}
+				else
+				{
+					@list( $action, $params ) = $args;
+				}
+			}
 
-                        return $data;
-                        break;
-                    case 'array';
-                        if( is_object( $data ) )
-                        {
-                            return get_object_vars( $data );
-                        }
+			// if the data is string or there is no action nothing to be proceed
+			if ( is_string( $data ) OR empty( $action ) ) return $data;
 
-                        return $data;
-                        break;
-                    case 'keys';
-                        if( is_object( $data ) )
-                        {
-                            $data = get_object_vars( $data );
-                        }
+			if ( in_array( $action, array( 'array', 'object', 'keys' ) ) )
+			{
+				switch ( $action )
+				{
+					default:
+					case 'object';
+						if ( is_array( $data ) )
+						{
+							return (object) $data;
+						}
 
-                        return array_keys( $data );
-                        break;
-                }
-            }
-            elseif( in_array( strtolower( $action ), array( 'json', 'serialize' ) ) )
-            {
-                switch( $action )
-                {
-                    default:
-                    case 'json':
-                        return json_encode( $data );
-                        break;
-                    case 'serialize';
-                        return serialize( $data );
-                        break;
-                }
-            }
-            elseif( isset( $data->{$action} ) )
-            {
-                return $data->{$action};
-            }
-            elseif( isset( $data[ $action ] ) )
-            {
-                return $data[ $action ];
-            }
-        }
-    }
+						return $data;
+						break;
+					case 'array';
+						if ( is_object( $data ) )
+						{
+							return get_object_vars( $data );
+						}
 
-    // ------------------------------------------------------------------------
+						return $data;
+						break;
+					case 'keys';
+						if ( is_object( $data ) )
+						{
+							$data = get_object_vars( $data );
+						}
 
-    /**
-     * Call
-     * Magic method caller
-     *
-     * @access  public
-     * @final   this method can't be overwritten directly, to overwrite this method create __callOverride($method,
-     *          $args = array())
-     *
-     * @param   $method   string of method name or property name
-     * @param   $args     array of parameters
-     *
-     * @return mixed
-     */
-    final public function __call( $method, $args = array() )
-    {
-        if( method_exists( $this, '__callOverride' ) )
-        {
-            return $this->__callOverride( $method, $args );
-        }
-        else
-        {
-            return static::__callStatic( $method, $args );
-        }
-    }
+						return array_keys( $data );
+						break;
+				}
+			}
+			elseif ( in_array( strtolower( $action ), array( 'json', 'serialize' ) ) )
+			{
+				switch ( $action )
+				{
+					default:
+					case 'json':
+						return json_encode( $data );
+						break;
+					case 'serialize';
+						return serialize( $data );
+						break;
+				}
+			}
+			elseif ( isset( $data->{$action} ) )
+			{
+				return $data->{$action};
+			}
+			elseif ( isset( $data[ $action ] ) )
+			{
+				return $data[ $action ];
+			}
+		}
+	}
 
-    // ------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 
-    /**
-     * Call Static
-     * Magic method to bewitch class methods or properties call
-     *
-     * Methods: methods can be called as static method or non-static method
-     * Properties: properties can be called as a method with custom returning value conversion
-     *
-     * @access      public
-     * @final       this method can't be overwritten
-     *
-     * @method      _init() called class init method
-     *              _getProperty() called class method
-     *
-     * @property-read   static::$_instance
-     * @property-read   static::$_reflection
-     * @property-read   static::$_storage
-     *
-     * @param   string $method method or property name
-     * @param   array  $args   array of parameters
-     *
-     * @return mixed
-     */
-    final public static function __callStatic( $method, $args = array() )
-    {
-        // check if the called class has been initialized and reflected
-        if( empty( static::$_instance ) && empty( static::$_reflection ) )
-        {
-            $class = get_called_class();
-            $class::_init();
-        }
+	/**
+	 * Call
+	 * Magic method caller
+	 *
+	 * @access  public
+	 * @final   this method can't be overwritten directly, to overwrite this method create __callOverride($method,
+	 *          $args = array())
+	 *
+	 * @param   $method   string of method name or property name
+	 * @param   $args     array of parameters
+	 *
+	 * @return mixed
+	 */
+	final public function __call( $method, $args = array() )
+	{
+		if ( method_exists( $this, '__callOverride' ) )
+		{
+			return $this->__callOverride( $method, $args );
+		}
+		else
+		{
+			return self::__callStatic( $method, $args );
+		}
+	}
 
-        // check whether the called method is a to call class storage properties
-        if( $method === 'storage' )
-        {
-            return static::$_storage->getArrayCopy();
-        }
-        elseif( isset( static::$_storage[ $method ] ) )
-        {
-            if( empty( $args ) )
-            {
-                return static::$_storage->__get( $method );
-            }
+	// ------------------------------------------------------------------------
 
-            return static::$_storage->__call( $method, $args );
-        }
-        elseif( method_exists( static::$_storage, $method ) )
-        {
-            return static::$_storage->__call( $method, $args );
-        }
+	/**
+	 * Call Static
+	 * Magic method to bewitch class methods or properties call
+	 *
+	 * Methods: methods can be called as static method or non-static method
+	 * Properties: properties can be called as a method with custom returning value conversion
+	 *
+	 * @access      public
+	 * @final       this method can't be overwritten
+	 *
+	 * @method      _init() called class init method
+	 *              _getProperty() called class method
+	 *
+	 * @property-read   static::$_instance
+	 * @property-read   static::$_reflection
+	 * @property-read   static::$_registry
+	 *
+	 * @param   string $method method or property name
+	 * @param   array  $args   array of parameters
+	 *
+	 * @return mixed
+	 */
+	final public static function __callStatic( $method, $args = array() )
+	{
+		$method = strtolower( $method );
+		$method = isset( self::$_methods_maps[ $method ] ) ? self::$_methods_maps[ $method ] : $method;
 
-        // check whether is a public non static method
-        elseif( isset( static::$_methods[ 'public' ] ) && (
-                in_array( $non_static_method = $method, static::$_methods[ 'public' ] ) ||
-                in_array( $non_static_method = '_' . $method, static::$_methods[ 'public' ] ) ||
-                in_array( $non_static_method = str_replace( '_', '', $method ), static::$_methods[ 'public' ] )
-            )
-        )
-        {
-            if( is_array( $args ) )
-            {
-                return call_user_func_array( array( static::$_instance, $non_static_method ), $args );
-            }
-            else
-            {
-                return static::$_instance->{$non_static_method}( $args );
-            }
+		// check if the called class has been initialized and reflected
+		if ( empty( self::$_instance ) AND empty( self::$_reflection ) )
+		{
+			$class = get_called_class();
+			call_user_func( $class . '::initialize' );
+		}
 
-        }
+		// check whether the called method is a to call class registry properties
+		if ( $method === 'registry' )
+		{
+			return self::$_registry;
+		}
+		elseif ( isset( self::$_registry[ $method ] ) )
+		{
+			if ( empty( $args ) )
+			{
+				return self::$_registry->__get( $method );
+			}
 
-        // check whether is to call class properties
-        elseif( isset( static::$_properties[ 'public' ] ) && in_array( $method, static::$_properties[ 'public' ] ) ||
-                isset( static::$_properties[ 'static' ] ) && in_array( $method, static::$_properties[ 'static' ] )
-        )
-        {
-            if( empty( $args ) )
-            {
-                return static::$_instance->__get( $method );
-            }
+			return self::$_registry->__call( $method, $args );
+		}
+		elseif ( isset( self::$_instance->{$method} ) )
+		{
+			return self::$_instance->{$method};
+		}
 
-            return static::__getProperty( $method, $args );
-        }
+		// check whether is a public non static method
+		elseif ( isset( self::$_methods[ 'public' ] ) AND (
+				in_array( $non_static_method = $method, self::$_methods[ 'public' ] ) OR
+				in_array( $non_static_method = '_' . $method, self::$_methods[ 'public' ] ) OR
+				in_array( $non_static_method = str_replace( '_', '', $method ), self::$_methods[ 'public' ] )
+			)
+		)
+		{
+			if ( is_array( $args ) )
+			{
+				return call_user_func_array( array( self::$_instance, $non_static_method ), $args );
+			}
+			else
+			{
+				return self::$_instance->{$non_static_method}( $args );
+			}
 
-        throw new \BadMethodCallException( 'Undefined class method: ' . get_called_class() . '::' . $method );
-    }
+		}
+
+		// check whether is to call class properties
+		elseif ( isset( self::$_properties[ 'public' ] ) AND in_array( $method, self::$_properties[ 'public' ] ) OR
+			isset( self::$_properties[ 'static' ] ) AND in_array( $method, self::$_properties[ 'static' ] )
+		)
+		{
+			if ( empty( $args ) )
+			{
+				return self::$_instance->__get( $method );
+			}
+
+			return self::__getProperty( $method, $args );
+		}
+
+		throw new \BadMethodCallException( 'Undefined class method: ' . get_class( self::$_instance ) . '::' . $method );
+	}
 }
