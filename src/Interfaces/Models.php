@@ -92,11 +92,7 @@ abstract class Models
      */
     public function __construct()
     {
-<<<<<<< HEAD
         // Model Class
-=======
-        // Library Class
->>>>>>> origin/master
         $this->_model_name = get_called_class();
 
         // let the magic begin
@@ -109,27 +105,6 @@ abstract class Models
 
         // set class instance
         static::$_instance =& $this;
-<<<<<<< HEAD
-=======
-
-        $this->_library_name = get_called_class();
-
-        if( ! isset( static::$_reflection ) )
-        {
-            // let the magic begin
-            static::_reflection();
-        }
-
-        foreach( glob( $this->_get_drivers_path() . '*.php' ) as $filepath )
-        {
-            $this->_valid_drivers[ strtolower( pathinfo( $filepath, PATHINFO_FILENAME ) ) ] = $filepath;
-        }
-
-        if( ! isset( static::$_instance ) )
-        {
-            static::$_instance =& $this;
-        }
->>>>>>> origin/master
     }
     // ------------------------------------------------------------------------
 
@@ -191,11 +166,7 @@ abstract class Models
     {
         if( file_exists( $this->_valid_sub_models[ $sub_model ] ) )
         {
-<<<<<<< HEAD
             require_once( $this->_valid_sub_models[ $sub_model ] );
-=======
-            require_once( $this->_valid_drivers[ $driver ] );
->>>>>>> origin/master
 
             if( strpos( $this->_model_name, '\\' ) !== FALSE )
             {
@@ -212,11 +183,7 @@ abstract class Models
 
                 if( isset( $this->db ) )
                 {
-<<<<<<< HEAD
                     $this->{$sub_model}->db = $this->db;
-=======
-                    $this->{$driver}->db = $this->db;
->>>>>>> origin/master
                 }
             }
         }
