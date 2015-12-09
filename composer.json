@@ -2,7 +2,6 @@
   "name": "o2system/o2glob",
   "description": "Mini Singleton Core Framework aka Super Global Object",
   "license": "MIT",
-  "version": "2.0.0-beta",
   "type": "php-libraries",
   "keywords": ["singleton","php","framework","driver","libraries"],
   "authors": [
