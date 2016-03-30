@@ -1,8 +1,8 @@
 {
   "name": "o2system/o2glob",
-  "description": "Mini Singleton Core Framework aka Super Global Object",
+  "description": "Singleton Design Pattern Core Framework",
   "license": "MIT",
-  "type": "php-libraries",
+  "type": "PHP Core Libraries",
   "keywords": ["singleton","php","framework","driver","libraries"],
   "authors": [
     {
@@ -29,7 +29,8 @@
     "github-wiki": "http://github.com/circlecreative/o2glob/wiki"
   },
   "require": {
-    "php": ">=5.4.0"
+    "php": ">=5.4.0",
+    "o2system/gears": "*"
   },
   "autoload": {
     "psr-4": {
