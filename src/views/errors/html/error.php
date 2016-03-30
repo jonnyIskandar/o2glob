@@ -122,14 +122,8 @@
         </p>
 
         <div class="copyright">
-            POWERED BY<br>
-            O2System Framework <?php echo SYSTEM_VERSION; ?><br><br>
-
-            <small>
-                Copyright &copy; 2010 - <?php echo date('Y'); ?><br>
-                PT. Lingkar Kreasi (Circle Creative)<br>
-                All Rights Reserved
-            </small>
+            O2System Glob <?php echo \O2System\Glob::$version; ?><br>
+            Open Source PHP Core Framework
         </div>
     </div>
 </body>

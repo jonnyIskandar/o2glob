@@ -1,6 +1,5 @@
 {
   "name": "o2system/o2glob",
-<<<<<<< HEAD
   "description": "Mini Singleton Core Framework aka Super Global Object",
   "license": "MIT",
   "type": "php-libraries",
@@ -8,15 +7,6 @@
   "authors": [
     {
       "name": "",
-=======
-  "description": "Singleton Design Pattern Core Framework",
-  "license": "MIT",
-  "type": "PHP Core Libraries",
-  "keywords": ["singleton","php","framework","driver","libraries"],
-  "authors": [
-    {
-      "name": "PT. Lingkar Kreasi (Circle Creative)",
->>>>>>> 9b11b2328fa64faf9c8eda3a589b007db31ae04b
       "email": "developer@circle-creative.com",
       "homepage": "http://www.circle-creative.com",
       "role": "Founder"
@@ -40,11 +30,7 @@
   },
   "require": {
     "php": ">=5.4.0",
-<<<<<<< HEAD
     "o2system/gears"  : "*"
-=======
-    "o2system/gears": "*"
->>>>>>> 9b11b2328fa64faf9c8eda3a589b007db31ae04b
   },
   "autoload": {
     "psr-4": {

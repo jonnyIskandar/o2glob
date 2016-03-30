@@ -135,9 +135,13 @@ class ExceptionHandler
 	 */
 	public function showException( \Exception $exception )
 	{
-		$paths = array_reverse( $this->_paths );
-
+		$paths = $this->_paths;
 		$filename = empty( $exception->view_exception ) ? 'exception.php' : $exception->view_exception;
+
+		if( class_exists('O2System') )
+		{
+			array_shift( $paths );
+		}
 
 		foreach ( $paths as $path )
 		{
@@ -342,7 +346,12 @@ class ExceptionHandler
 	 */
 	public function showPhpError( $severity, $message, $filepath, $line )
 	{
-		$paths = array_reverse( $this->_paths );
+		$paths = $this->_paths;
+
+		if( class_exists('O2System') )
+		{
+			array_shift( $paths );
+		}
 
 		foreach ( $paths as $path )
 		{

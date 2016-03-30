@@ -57,6 +57,7 @@ namespace O2System
 		use Glob\Interfaces\SingletonInterface;
 		use Glob\Interfaces\StorageInterface;
 
+		static $version = '2.0.0';
 		static $config;
 		static $language;
 
