@@ -30,7 +30,7 @@
   },
   "require": {
     "php": ">=5.4.0",
-    "o2system/gears"  : "*"
+    "o2system/o2gears"  : "*"
   },
   "autoload": {
     "psr-4": {
