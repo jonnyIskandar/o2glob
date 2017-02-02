@@ -1,5 +1,5 @@
 {
-  "name": "jonny-iskandar/o2system/o2glob",
+  "name": "jonny/o2system/o2glob",
   "description": "Mini Singleton Core Framework aka Super Global Object",
   "license": "MIT",
   "type": "php-libraries",
